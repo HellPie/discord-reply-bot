@@ -1,0 +1,150 @@
+################################################################################
+###                              PRIVATE FILES                               ###
+################################################################################
+
+# - Private Config
+local.ini
+private.ini
+
+# Only useful if you work in my team, these are private projects
+# so nobody should really need them. Here for completeness.
+# - "Lumen" Buildbot
+.lumen/
+build-config.lumen
+build-data.lumen
+customs.lumen
+
+# - "Bella" Extension
+.bella/
+bella.properties
+
+# - AI Informations
+.coral/
+coral.config
+coral.db
+
+
+################################################################################
+###                         JETBRAINS PYCHARM FILES                          ###
+################################################################################
+
+#------------------------------------------------------------------------------#
+#                                   GENERIC                                    #
+#------------------------------------------------------------------------------#
+
+# - Generated folders
+bin/
+gen/
+
+# - Native Output
+*.o
+*.out
+*.dylib
+*.obj
+*.so
+
+# - Logs
+log/
+*.log
+
+#------------------------------------------------------------------------------#
+#                              JETBRAINS SPECIFIC                              #
+#------------------------------------------------------------------------------#
+
+
+# - Build caches
+build/
+*/build/
+out/
+*/out/
+tmp/
+*/tmp/
+
+# - Navigation cache
+.navigation/
+
+# - App Captures
+captures/
+
+# - PyCharm Configuration (user-specific informations)
+.idea/dictionaries/
+.idea/libraries/
+.idea/shelf/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/misc.xml
+
+# - PyCharm Configuration (user-specific data)
+.idea/dataSources.ids
+.idea/dataSources.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
+
+# - Project Configurations
+.idea_modules/
+*.iml
+*.ipr
+*.iws
+
+
+###############################################################################
+###                         OPERATIVE SYSTEM FILES                          ###
+###############################################################################
+
+#------------------------------------------------------------------------------#
+#                                    LINUX                                     #
+#------------------------------------------------------------------------------#
+
+# - Backups
+~*
+
+# - Folder configuration
+.directory
+
+# - Trash copies
+.Trash-*
+
+#------------------------------------------------------------------------------#
+#                                  MAC OS X                                    #
+#------------------------------------------------------------------------------#
+# Mac OS is worse than Windows with all this excessive, horrible data caching...
+
+# - Chached generic files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# - Thumbnails
+._*
+
+# - Device Caches (if repo synced to root of a device)
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# - AFP Sharing Informations (if repo is shared via AFP)
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+#------------------------------------------------------------------------------#
+#                                   WINDOWS                                    #
+#------------------------------------------------------------------------------#
+# - Thumbnails
+Thumbs.db
+ehthumbs.db
+
+# - Folder Configuration
+Desktop.ini
+
+# - Trash copies
+$RECYCLE.BIN/
+
+# - Links
+*.lnk
