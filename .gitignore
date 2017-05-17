@@ -53,6 +53,7 @@ log/
 
 
 # - Build caches
+.idea/dataSources/
 build/
 */build/
 out/
