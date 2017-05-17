@@ -2,33 +2,33 @@ import re
 
 from discord.ext.commands import Bot
 
-import bot.database
+import bot.database as database
 from bot.config import CONFIG
 
-bot = Bot(CONFIG.get(section='BOT', option='PREFIX').split(' '), description=CONFIG['BOT']['DESCRIPTION'])
+_bot = Bot(CONFIG.get(section='BOT', option='PREFIX').split(' '), description=CONFIG['BOT']['DESCRIPTION'])
 
 
-@bot.event
+@_bot.event
 async def on_message(message):
 	if re.compile('^ay[y]+$', re.IGNORECASE).match(message.content):
-		return await  bot.send_message(message.channel, 'lmao')
+		return await  _bot.send_message(message.channel, 'lmao')
 	elif re.compile('^wew$', re.IGNORECASE).match(message.content):
-		return await bot.send_message(message.channel, 'lad')
+		return await _bot.send_message(message.channel, 'lad')
 	elif re.compile('^dead$', re.IGNORECASE).match(message.content):
-		return await bot.send_message(message.channel, 'ass')
+		return await _bot.send_message(message.channel, 'ass')
 	elif re.compile('^suck$', re.IGNORECASE).match(message.content):
-		return await bot.send_message(message.channel, 'an egg @Rednah#2899')
+		return await _bot.send_message(message.channel, 'an egg @Rednah#2899')
 	elif re.compile('^frigg$', re.IGNORECASE).match(message.content):
-		return await bot.send_message(message.channel, 'off')
+		return await _bot.send_message(message.channel, 'off')
 	elif re.compile('^oh? ?shit$', re.IGNORECASE).match(message.content):
-		return await bot.send_message(message.channel, 'waddup')
+		return await _bot.send_message(message.channel, 'waddup')
 	elif re.compile('^shut ?up!?( @.+#\d+!?)?$', re.IGNORECASE).match(message.content):
-		return await bot.send_message(message.channel, 'wow, such a Sageth')
+		return await _bot.send_message(message.channel, 'wow, such a Sageth')
 	else:
-		await bot.process_commands(message)
+		await _bot.process_commands(message)
 
 
-@bot.group(check=lambda ctx: ctx.message.author.id == ctx.message.server.owner.id)
+@_bot.group(check=lambda ctx: ctx.message.author.id == ctx.message.server.owner.id)
 async def admin():
 	pass
 
@@ -60,4 +60,4 @@ async def perm(ctx, mention, action):
 
 
 def start():
-	bot.run(CONFIG.get(section='LOGIN', option='TOKEN'))
+	_bot.run(CONFIG.get(section='LOGIN', option='TOKEN'))
