@@ -35,6 +35,7 @@ coral.db
 # - Generated folders
 bin/
 gen/
+__pycache__/
 
 # - Native Output
 *.o

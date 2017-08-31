@@ -5,12 +5,8 @@ __CONFIG_DEFAULT = {
 	'LOGIN': {'TOKEN': '', 'USERNAME': '', 'PASSWORD': ''},
 	
 	'BOT': {
-		'PREFIX': '!',
+		'PREFIX': ':$',
 		'DESCRIPTION': ''
-	},
-	
-	'HELP': {
-		#
 	}
 }
 
