@@ -121,12 +121,12 @@ async def on_message(message):
 		return await bot.send_message(message.channel, 'reeeeeeeeeeeeeeeeeeee, just like obi{}'.format(' <:obi_face:330095063067525132>' if randint(0, 9) <= CHANCE_FACTOR else '.'))
 	elif re.compile('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:calvinHug:\d+>', re.IGNORECASE).match(message.content):
 		final_emote = ''
-		if author.id in ['210279248685039616', '202163416083726338', '157725308127150081', '245997507606216704', '225511609567543297']:  # Amanda., HellPie, Bjorn, sejin., Kirei
+		if author.id in ADORABLE_PEOPLE:
 			final_emote = '<:moon2cute:316630780313075712>'
 		return await bot.send_message(message.channel, '<@{}> <:jay3hugged:332946887202308097> {}'.format(author.id, final_emote))
 	elif re.compile('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:jay3hugged:\d+>', re.IGNORECASE).match(message.content):
 		final_emote = ''
-		if author.id in ['210279248685039616', '202163416083726338', '157725308127150081', '245997507606216704', '225511609567543297']:  # Amanda., HellPie, Bjorn, sejin., Kirei
+		if author.id in ADORABLE_PEOPLE:
 			final_emote = '<:moon2cute:316630780313075712>'
 		return await bot.send_message(message.channel, '<@{}> <:calvinHug:326950539524964352> {}'.format(author.id, final_emote))
 	else:
