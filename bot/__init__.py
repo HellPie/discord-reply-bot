@@ -1,13 +1,20 @@
 import re
 import json
+from random import randint
 
+from discord import Game
 from discord.ext.commands import Bot
 
 from bot.config import CONFIG
 
 PARENTS = ['202163416083726338', '225511609567543297']  # HellPie, Kirei
-ADORABLE_PEOPLE = ['202163416083726338', '225511609567543297', '245997507606216704']  # HellPie, Kirei, Sejin
+ADORABLE_PEOPLE = ['202163416083726338', '225511609567543297', '245997507606216704',
+                   '210279248685039616']  # HellPie, Kirei, Sejin, Amanda.
+ZANTOMODE_PEOPLE = ['172331493828460545', '88792744587169792'].extend(ADORABLE_PEOPLE)  # zanto, SakuraJinkyu
+LESSER_CREATURES = ['228162606580367370', '280096430356430848']  # Sageth, Pmik
 CHANCE_FACTOR = 1  # 20%
+
+REPLIES_STATUS = True
 
 SIMULATE_USER = None
 SIMULATE_COUNT = 0
@@ -15,6 +22,7 @@ SIMULATE_COUNT = 0
 ZANTOCONF = {}
 
 bot = Bot(CONFIG.get(section='BOT', option='PREFIX').split(' '), description=CONFIG['BOT']['DESCRIPTION'])
+
 
 @bot.event
 async def on_ready():
@@ -28,7 +36,7 @@ async def on_ready():
 async def on_message(message):
 	if message.author.id == bot.user.id:
 		return
-	if not bot_can_reply and message.author.id not in ADORABLE_PEOPLE:  # Bypass disabled replies for the selected few
+	if not REPLIES_STATUS and message.author.id not in ADORABLE_PEOPLE:  # Bypass disabled replies for the selected few
 		await bot.process_commands(message)
 		return
 	author = message.author
@@ -38,8 +46,6 @@ async def on_message(message):
 		author = await bot.get_user_info(SIMULATE_USER)  # Change the user to the test subject
 		SIMULATE_COUNT -= 1
 	if re.compile('^ay[y]+$', re.IGNORECASE).match(message.content):
-		# if message.author.id == '208286812089614337' and randint(0, 9) < 4:  # Obi
-		#	return await bot.send_message(message.channel, 'stagnation temperature <:obi_face:330095063067525132>')  # Shall the meme be remembered
 		if author.id == '208286812089614337' and randint(0, 9) <= CHANCE_FACTOR:  # Obi
 			return await bot.send_message(message.channel, 'lmao <:obi_face:330095063067525132>')
 		return await  bot.send_message(message.channel, 'lmao')
@@ -47,19 +53,6 @@ async def on_message(message):
 		return await bot.send_message(message.channel, 'lad')
 	elif re.compile('^dead$', re.IGNORECASE).match(message.content):
 		return await bot.send_message(message.channel, 'ass')
-	# elif re.compile('^hey rednah$', re.IGNORECASE).match(message.content):  # Gone, might as well hide this
-	# 	_random = randint(0, 2)
-	# 	if _random == 0:
-	# 		content = ':regional_indicator_s: :regional_indicator_u: :regional_indicator_c: :regional_indicator_k: :wavy_dash:  :a: :regional_indicator_n::wavy_dash:  :regional_indicator_e: :regional_indicator_g: :regional_indicator_g:'
-	# 	elif _random == 1:
-	# 		content = 'https://cdn.discordapp.com/attachments/291291366644908032/325005014332604416/56492658.jpg'
-	# 	elif _random == 2:
-	# 		content = 'suck and egg! *wheezes*'
-	# 	else:
-	# 		return
-	# 	return await bot.send_message(message.channel, content)
-	# elif re.compile('^suck$', re.IGNORECASE).match(message.content):
-	# 	return await bot.send_message(message.channel, 'an egg @Rednah#2899')
 	elif re.compile('^frigg$', re.IGNORECASE).match(message.content):
 		return await bot.send_message(message.channel, 'off')
 	elif re.compile('^oh? ?shit$', re.IGNORECASE).match(message.content):
@@ -84,12 +77,10 @@ async def on_message(message):
 		return await bot.send_message(message.channel, 'always off')
 	elif re.compile('^sh?leep ti(ght|te)(,? [a-z#0-9]+)?$', re.IGNORECASE).match(message.content):
 		return await bot.send_message(message.channel, 'don\'t let the genjis bite')
-	elif re.compile('^i( ?(ly|((love|luv) (yo)?u))),? (@?(Not)?Hime|(@auto-reply-bot#9347|<@\!311154146969518083>))!?$', re.IGNORECASE).match(
-			message.content):
+	elif re.compile('^i( ?(ly|((love|luv) (yo)?u))),? (@?(Not)?Hime|(@auto-reply-bot#9347|<@!311154146969518083>))!?$', re.IGNORECASE).match(message.content):
 		if author.id == '208286812089614337':  # Obi
 			return await bot.send_message(message.channel, 'ily too obi <3{}'.format(
 				' <:obi_face:330095063067525132>' if randint(0, 9) <= CHANCE_FACTOR else '.'))
-		# return await bot.send_message(message.channel, 'and not only me :broken_heart:')  # Remember remember the 5th of whenever the heck Pastelle drama
 		elif author.id == '225511609567543297':  # Kirei <3
 			return await bot.send_message(message.channel, 'ily a lot mommy :two_hearts: :two_hearts: ^~^')
 		elif author.id == '202163416083726338':  # _HellPie
@@ -100,26 +91,17 @@ async def on_message(message):
 			return await bot.send_message(message.channel, 'ily too darlin\' c:')
 		elif author.id == '133006275305930753':  # Lotus
 			return await bot.send_message(message.channel, 'Same, but Id love you more if you switched off widow...')
-		# elif author.id in ['228162606580367370', '280096430356430848']:  # Sageth, Pmik
-		# 	return await bot.send_message(message.channel, '1. wow, pedo 2. I have a boyfriend')  # Gone, they will be missed, especially by Hime
+		elif author.id in LESSER_CREATURES:
+			return await bot.send_message(message.channel, '1. wow, pedo 2. I have a boyfriend')
 		else:
 			return await bot.send_message(message.channel, 'ty, have a nice day darlin\'')
 	elif re.compile('^suc[ck] an? egg$', re.IGNORECASE).match(message.content) and message.author.id not in ADORABLE_PEOPLE:  # Always disable mean replies for nice people
 		return await bot.send_message(message.channel, 'no, you, eggsucker')
-	# elif re.compile('^pmik(\.\.\.)?$', re.IGNORECASE).match(message.content):
-	#		return await bot.send_message(message.channel, '*boostedmik')  # Disable cuz the troll can't be trolled -_-
 	elif re.compile('^wo[ah]{2}!*$', re.IGNORECASE).match(message.content):
 		return await bot.send_message(message.channel, 'WOW')
-	# elif re.compile('^is .+ boosted\??$', re.IGNORECASE).match(message.content):  # I miss this one, was fun while it lasted
-	#	if re.compile('^is ((@?DEDZ(#4693)?)|(<?@?265288305409654785>?)) boosted\??', re.IGNORECASE).match(message.content):
-	#		return await bot.send_message(message.channel, 'just like maple syrup <:maple_syrup:330274254493057026>')
-	#	for user in message.mentions:
-	#		if user.id in ADORABLE_PEOPLE:  # Always disable mean replies for nice people, in this case, don't disable, be nice to them
-	#			return await bot.send_message(message.channel, 'Loading data...\nParsing reply...\nCheck: User is not boosted')
-	#	return await bot.send_message(message.channel, 'just like obi <:obi_face:330095063067525132>')
 	elif re.compile('^no((rmie)|(o+b))s?!*$', re.IGNORECASE).match(message.content):
-		return await bot.send_message(message.channel, 'reeeeeeeeeeeeeeeeeeee, just like obi{}'.format(' <:obi_face:330095063067525132>' if randint(0, 9) <= CHANCE_FACTOR else '.'))
-	elif re.compile('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:calvinHug:\d+>', re.IGNORECASE).match(message.content):
+		return await bot.send_message(message.channel, 'reeeeeeeeeeeeeeeeeeee, just like obi')
+	elif re.compile('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:calvinHug:\d+>',  re.IGNORECASE).match(message.content):
 		final_emote = ''
 		if author.id in ADORABLE_PEOPLE:
 			final_emote = '<:moon2cute:316630780313075712>'
@@ -134,8 +116,8 @@ async def on_message(message):
 
 
 @bot.command(pass_context=True)
-async def zantoconf(ctx, *body):  # Use ':$zantoconf <character> as <emote>' to replace ONE character with an emote or any other string in ':$zantomode <text>'
-	if ctx.message.author.id not in PARENTS and ctx.message.author.id not in ['172331493828460545', '88792744587169792']:  # Zanto, SakuraJinkyu
+async def zantoconf(ctx,  *body):  # Use ':$zantoconf <character> as <emote>' to replace ONE character with an emote or any other string in ':$zantomode <text>'
+	if ctx.message.author.id not in PARENTS and ctx.message.author.id not in ZANTOMODE_PEOPLE:
 		return
 	args = ' '.join(body).split(' as ')
 	if len(args) < 2:
@@ -148,8 +130,8 @@ async def zantoconf(ctx, *body):  # Use ':$zantoconf <character> as <emote>' to 
 
 @bot.command(pass_context=True)
 async def zantomode(ctx, *sentence):
-	# Now the command is enabled for everyone, hide the check
-	# if ctx.message.author.id not in PARENTS and ctx.message.author.id not in ['172331493828460545', '88792744587169792']:  # Zanto, SakuraJinkyu
+	if ctx.message.author.id not in PARENTS and ctx.message.author.id not in ZANTOMODE_PEOPLE:  # Zanto, SakuraJinkyu
+		return
 	global ZANTOCONF
 	with open('zantoconf.json') as zantoconfjson:
 		ZANTOCONF = json.load(zantoconfjson)
@@ -194,20 +176,19 @@ async def config(ctx, flag, value, *extras):
 			value = '{}#{}'.format(user.name, user.discriminator)
 		for args in extras:
 			kvpair = args.split(':')
+			global SIMULATE_COUNT
 			if kvpair[0] == 'count':
-				global SIMULATE_COUNT
 				SIMULATE_COUNT = int(kvpair[1])
 			elif kvpair[0] == 'stop':
-				global SIMULATE_COUNT
 				SIMULATE_COUNT = 0
 	elif flag == 'REPLIES':
-		global bot_can_reply
+		global REPLIES_STATUS
 		if value is None or value is '' or value == 'TOGGLE':
-			value = 'OFF' if bot_can_reply else 'ON'
+			value = 'OFF' if REPLIES_STATUS else 'ON'
 		if value == 'ON':
-			bot_can_reply = True
+			REPLIES_STATUS = True
 		elif value == 'OFF':
-			bot_can_reply = False
+			REPLIES_STATUS = False
 	return await bot.send_message(ctx.message.channel, 'Updated: `{}` to `{}`{}'.format(flag, value, 'with extras `{}`'.format(extras) if len(extras) > 0 else ''))
 
 
