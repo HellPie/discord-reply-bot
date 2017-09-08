@@ -57,8 +57,8 @@ async def on_ready():
 @bot.event
 async def on_message(message):
 	def match(_expr):
-		return match(_expr)
-	if BRIDGECONF[message.channel.id] is not None:
+		return re.compile(_expr, re.IGNORECASE).match(message.content)
+	if message.channel.id in BRIDGECONF:
 		print('[{}] {}#{}@{}/{} -> {}'.format(
 			message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
 			message.author.name,
@@ -97,9 +97,10 @@ async def on_message(message):
 		await bot.process_commands(message)
 		return
 	author = message.author
+	global SIMULATE_USER
+	global SIMULATE_COUNT
 	if SIMULATE_USER is not None and SIMULATE_COUNT > 0:
 		author = await bot.get_user_info(SIMULATE_USER)
-		global SIMULATE_COUNT
 		SIMULATE_COUNT -= 1
 	if match('^ay[y]+$'):
 		reply = 'lmao'
@@ -195,7 +196,7 @@ async def zantomode(ctx, *sentence):
 	if ctx.message.author.id not in PARENTS and ctx.message.author.id not in ZANTOMODE_PEOPLE:
 		return
 	global ZANTOCONF
-	with open('{}/zanto_conf.json'.format(path.realpath(getcwd())), 'r+') as zanto_conf:
+	with open(path.join(path.realpath(getcwd()), 'assets', 'zanto_conf.json'), 'r+') as zanto_conf:
 		ZANTOCONF = json.load(zanto_conf)
 	# space = '<:regional_indicator_none:336187638514057226> '  # Custom emoji for an empty blue square
 	space = '<:jay3thinking:332958429083729933> '
@@ -263,7 +264,7 @@ async def config(ctx, flag, value, *extras):
 				if kvpair[0] == 'destination':
 					destination = kvpair[1]
 			BRIDGECONF[value] = destination
-			with open('{}/bridge_conf.json'.format(path.realpath(getcwd())), 'w+') as bridge_conf:
+			with open(path.join(path.realpath(getcwd()), 'assets', 'bridge_conf.json'), 'w+') as bridge_conf:
 				json.dump(BRIDGECONF, bridge_conf)
 	return await bot.send_message(
 		ctx.message.channel,
