@@ -23,6 +23,9 @@ bella.properties
 coral.config
 coral.db
 
+# - Hime Storage
+*.json
+
 
 ################################################################################
 ###                         JETBRAINS PYCHARM FILES                          ###
