@@ -58,8 +58,15 @@ async def on_ready():
 async def on_message(message):
 	def match(_expr):
 		return re.compile(_expr, re.IGNORECASE).match(message.content)
+	_file = path.join(path.realpath(getcwd()), 'assets', 'bridge_conf.json')
+	if not path.exists(_file):
+		with open(_file, 'w+') as bridge_conf:
+			json.dump({}, bridge_conf)
+	global BRIDGECONF
+	with open(_file, 'r') as bridge_conf:
+		BRIDGECONF = json.load(bridge_conf)
 	if message.channel.id in BRIDGECONF:
-		print('[{}] {}#{}@{}/{} -> {}'.format(
+		print('[{}] {}#{}@{}/{} ->\n{}\n'.format(
 			message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
 			message.author.name,
 			message.author.discriminator,
@@ -68,15 +75,9 @@ async def on_message(message):
 			message.content
 		))
 		if BRIDGECONF[message.channel.id] is not None:
-			channel = await bot.get_channel(BRIDGECONF[message.channel.id])
+			channel = bot.get_channel(BRIDGECONF[message.channel.id])
 			if channel is not None:
 				embed = Embed(
-					title='{}#{}@{}/{}'.format(
-						message.author.name,
-						message.author.discriminator,
-						message.channel.server.name,
-						message.channel.name
-					),
 					type='rich',
 					description=message.content,
 					timestamp=message.timestamp,
@@ -90,7 +91,7 @@ async def on_message(message):
 					text='{}#{}'.format(message.channel.server.name, message.channel.name),
 					icon_url=message.channel.server.icon_url
 				)
-				await bot.send_message(channel, embed=Embed)
+				await bot.send_message(channel, embed=embed)
 	if message.author.id == bot.user.id or message.author.bot:
 		return
 	if not REPLIES_STATUS and message.author.id not in ADORABLE_PEOPLE:  # Bypass disabled replies for the selected few
@@ -186,7 +187,7 @@ async def zantoconf(ctx, *body):
 	if len(args) < 2:
 		return await bot.send_message(ctx.message.channel, 'Need something like \':$zantoconf <character> as <emote>\'')
 	ZANTOCONF[args[0]] = args[1]
-	with open('{}/zanto_conf.json'.format(path.realpath(getcwd())), 'w+') as zanto_conf:
+	with open(path.join(path.realpath(getcwd()), 'assets', 'zanto_conf.json'), 'w+') as zanto_conf:
 		json.dump(ZANTOCONF, zanto_conf)
 	return await bot.send_message(ctx.message.channel, '{} => {} - Configured'.format(args[0], args[1]))
 
@@ -196,7 +197,11 @@ async def zantomode(ctx, *sentence):
 	if ctx.message.author.id not in PARENTS and ctx.message.author.id not in ZANTOMODE_PEOPLE:
 		return
 	global ZANTOCONF
-	with open(path.join(path.realpath(getcwd()), 'assets', 'zanto_conf.json'), 'r+') as zanto_conf:
+	_file = path.join(path.realpath(getcwd()), 'assets', 'zanto_conf.json')
+	if not path.exists(_file):
+		with open(_file, 'w+') as zanto_conf:
+			json.dump({}, zanto_conf)
+	with open(_file, 'r') as zanto_conf:
 		ZANTOCONF = json.load(zanto_conf)
 	# space = '<:regional_indicator_none:336187638514057226> '  # Custom emoji for an empty blue square
 	space = '<:jay3thinking:332958429083729933> '
@@ -258,12 +263,12 @@ async def config(ctx, flag, value, *extras):
 	elif flag == 'BRIDGE':
 		global BRIDGECONF
 		if value is not None:
-			destination = None
 			for args in extras:
 				kvpair = args.split(':')
 				if kvpair[0] == 'destination':
-					destination = kvpair[1]
-			BRIDGECONF[value] = destination
+					BRIDGECONF[value] = kvpair[1]
+				if kvpair[0] == 'stop' and value in BRIDGECONF:
+					del BRIDGECONF[value]
 			with open(path.join(path.realpath(getcwd()), 'assets', 'bridge_conf.json'), 'w+') as bridge_conf:
 				json.dump(BRIDGECONF, bridge_conf)
 	return await bot.send_message(
