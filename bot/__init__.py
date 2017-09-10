@@ -66,13 +66,14 @@ async def on_message(message):
 	with open(_file, 'r') as bridge_conf:
 		BRIDGECONF = json.load(bridge_conf)
 	if message.channel.id in BRIDGECONF:
-		print('[{}] {}#{}@{}/{} ->\n{}\n'.format(
+		print('[{}] {}#{}@{}/{} ->\n{}\n{}\n'.format(
 			message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
 			message.author.name,
 			message.author.discriminator,
 			message.channel.server.name,
 			message.channel.name,
-			message.content
+			message.content,
+			['{} - {}\n'.format(attachment['filename'], attachment['url']) for attachment in message.attachments]
 		))
 		if BRIDGECONF[message.channel.id] is not None:
 			channel = bot.get_channel(BRIDGECONF[message.channel.id])
@@ -91,6 +92,14 @@ async def on_message(message):
 					text='{}#{}'.format(message.channel.server.name, message.channel.name),
 					icon_url=message.channel.server.icon_url
 				)
+				for attachment in message.attachments:
+					if attachment['filename'].split('.')[-1].lower() in ['png', 'jpg', 'jpeg', 'gif', 'webp']:
+						embed.set_image(url=attachment['url'])
+					else:
+						embed.add_field(
+							name='{} ({}B)'.format(attachment['filename'], attachment['size']),
+							value=attachment['url']
+						)
 				await bot.send_message(channel, embed=embed)
 	if message.author.id == bot.user.id or message.author.bot:
 		return
