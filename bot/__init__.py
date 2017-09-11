@@ -298,15 +298,15 @@ async def debug(ctx, action, *extras):
 	if ctx.message.author.id != '202163416083726338':  # HellPie
 		return
 	if action == 'broadcast':
-		return await log(extras[0], '🔔 - Broadcast message: `{}`'.format(' '.join(extras[1:])))
+		return await log(extras[0], ':bell: - Broadcast message: `{}`'.format(' '.join(extras[1:])))
 	elif action == 'warn':
-		return await log(extras[0], '⚠ - {}'.format(' '.join(extras[1:])))
+		return await log(extras[0], ':warning: - {}'.format(' '.join(extras[1:])))
 	elif action == 'error':
-		return await log(extras[0], '❌ - {}'.format(' '.join(extras[1:])))
+		return await log(extras[0], ':x: - {}'.format(' '.join(extras[1:])))
 	elif action == 'success':
-		return await log(extras[0], '✅ - {}'.format(' '.join(extras[1:])))
+		return await log(extras[0], ':white_check_mark: - {}'.format(' '.join(extras[1:])))
 	elif action == 'wait':
-		return await log(extras[0], '⏳ - {}'.format(' '.join(extras[1:])))
+		return await log(extras[0], ':hourglass_flowing_sand: - {}'.format(' '.join(extras[1:])))
 	if action == 'log':
 		message = ''
 		if extras[0] == 'servers':
