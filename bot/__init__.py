@@ -72,7 +72,7 @@ async def on_message(message):
 			message.author.discriminator,
 			message.channel.server.name,
 			message.channel.name,
-			message.content,
+			message.clean_content,
 			['{} - {}\n'.format(attachment['filename'], attachment['url']) for attachment in message.attachments]
 		))
 		if BRIDGECONF[message.channel.id] is not None:
@@ -80,7 +80,7 @@ async def on_message(message):
 			if channel is not None:
 				embed = Embed(
 					type='rich',
-					description=message.content,
+					description=message.clean_content,
 					timestamp=message.timestamp,
 					colour=0xC9A864
 				)
