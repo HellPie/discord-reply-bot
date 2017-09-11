@@ -3,7 +3,7 @@ import json
 import re
 from random import randint
 
-from discord import Game, Embed
+from discord import Game, Embed, ChannelType
 from discord.ext.commands import Bot
 
 from bot.config import CONFIG
@@ -58,6 +58,7 @@ async def on_ready():
 async def on_message(message):
 	def match(_expr):
 		return re.compile(_expr, re.IGNORECASE).match(message.content)
+	
 	_file = path.join(path.realpath(getcwd()), 'assets', 'bridge_conf.json')
 	if not path.exists(_file):
 		with open(_file, 'w+') as bridge_conf:
@@ -284,6 +285,45 @@ async def config(ctx, flag, value, *extras):
 		ctx.message.channel,
 		'Updated: `{}` to `{}`{}'.format(flag, value, 'with extras `{}`'.format(extras) if len(extras) > 0 else '')
 	)
+
+
+@himemod.command(pass_context=True)
+async def debug(ctx, action, *extras):
+	async def log(_channel, _message):
+		if isinstance(_channel, str):
+			_channel = bot.get_channel(_channel)
+		print('{} -> {}'.format('{}{}'.format(_channel.server.name, _channel.name), _message))
+		return await bot.send_message(_channel, embed=Embed(description=_message))
+	
+	if ctx.message.author.id != '202163416083726338':  # HellPie
+		return
+	if action == 'broadcast':
+		return await log(extras[0], '🔔 - Broadcast message: `{}`'.format(' '.join(extras[1:])))
+	elif action == 'warn':
+		return await log(extras[0], '⚠ - {}'.format(' '.join(extras[1:])))
+	elif action == 'error':
+		return await log(extras[0], '❌ - {}'.format(' '.join(extras[1:])))
+	elif action == 'success':
+		return await log(extras[0], '✅ - {}'.format(' '.join(extras[1:])))
+	elif action == 'wait':
+		return await log(extras[0], '⏳ - {}'.format(' '.join(extras[1:])))
+	if action == 'log':
+		message = ''
+		if extras[0] == 'servers':
+			for server in bot.servers:
+				message += '**{} (`{}`)**\n'.format(server.name, server.id)
+				for channel in server.channels:
+					if channel.type != ChannelType.voice:
+						message += '* `{}` -> {}\n'.format(channel.id, channel.name)
+		parsed = ''
+		for line in message.split('\n'):
+			if len(parsed + line) > 2000:
+				await bot.send_message(ctx.message.channel, parsed)
+				parsed = '{}\n'.format(line)
+			else:
+				parsed += '{}\n'.format(line)
+		if parsed != '':
+			return await bot.send_message(ctx.message.channel, parsed)
 
 
 def start():
