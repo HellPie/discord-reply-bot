@@ -33,6 +33,9 @@ LESSER_CREATURES = [
 	'228162606580367370',  # Sageth
 	'280096430356430848'  # Pmik
 ]
+GUILDS_BLACKLIST = [
+	'348313906059411458'  # The Nards
+]
 
 CHANCE_FACTOR = 1  # 20%
 
@@ -102,7 +105,7 @@ async def on_message(message):
 							value=attachment['url']
 						)
 				await bot.send_message(channel, embed=embed)
-	if message.author.id == bot.user.id or message.author.bot:
+	if message.author.id == bot.user.id or message.author.bot or message.server.id in GUILDS_BLACKLIST:
 		return
 	if not REPLIES_STATUS and message.author.id not in ADORABLE_PEOPLE:  # Bypass disabled replies for the selected few
 		await bot.process_commands(message)
@@ -191,6 +194,8 @@ async def on_message(message):
 
 @bot.command(pass_context=True)
 async def zantoconf(ctx, *body):
+	if ctx.message.server.id in GUILDS_BLACKLIST:
+		return
 	if ctx.message.author.id not in PARENTS and ctx.message.author.id not in ZANTOMODE_PEOPLE:
 		return
 	args = ' '.join(body).split(' as ')
@@ -204,6 +209,8 @@ async def zantoconf(ctx, *body):
 
 @bot.command(pass_context=True)
 async def zantomode(ctx, *sentence):
+	if ctx.message.server.id in GUILDS_BLACKLIST:
+		return
 	if ctx.message.author.id not in PARENTS and ctx.message.author.id not in ZANTOMODE_PEOPLE:
 		return
 	global ZANTOCONF
