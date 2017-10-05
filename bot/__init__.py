@@ -3,7 +3,9 @@ import json
 import re
 from random import randint
 
+# noinspection PyPackageRequirements
 from discord import Game, Embed, ChannelType
+# noinspection PyPackageRequirements
 from discord.ext.commands import Bot
 
 from bot.config import CONFIG
@@ -33,9 +35,7 @@ LESSER_CREATURES = [
 	'228162606580367370',  # Sageth
 	'280096430356430848'  # Pmik
 ]
-GUILDS_BLACKLIST = [
-	'348313906059411458'  # The Nards
-]
+GUILDS_BLACKLIST = []
 
 CHANCE_FACTOR = 1  # 20%
 
