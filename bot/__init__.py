@@ -53,7 +53,7 @@ bot = Bot(CONFIG.get(section='BOT', option='PREFIX').split(' '), description=CON
 @bot.event
 async def on_ready():
 	print('\n#------------------------------------------------------------------------------#')
-	print('\tLOGIN: {}#{} ({})'.format(bot.user.name, bot.user.discriminator, bot.user.id))
+	print(f'\tLOGIN: {bot.user.name}#{bot.user.discriminator} ({bot.user.id})')
 	print('#------------------------------------------------------------------------------#\n')
 
 
@@ -71,13 +71,13 @@ async def on_message(message):
 		BRIDGECONF = json.load(bridge_conf)
 	if message.channel.id in BRIDGECONF:
 		print('[{}] {}#{}@{}/{} ->\n{}\n{}\n'.format(
-			message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+			message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
 			message.author.name,
 			message.author.discriminator,
 			message.channel.server.name,
 			message.channel.name,
 			message.clean_content,
-			['{} - {}\n'.format(attachment['filename'], attachment['url']) for attachment in message.attachments]
+			[f'{attachment["filename"]} - {attachment["url"]}\n' for attachment in message.attachments]
 		))
 		if BRIDGECONF[message.channel.id] is not None:
 			channel = bot.get_channel(BRIDGECONF[message.channel.id])
@@ -89,11 +89,11 @@ async def on_message(message):
 					colour=0xC9A864
 				)
 				embed.set_author(
-					name='{}#{}'.format(message.author.name, message.author.discriminator),
+					name=f'{message.author.name}#{message.author.discriminator}',
 					icon_url=message.author.avatar_url
 				)
 				embed.set_footer(
-					text='{}#{}'.format(message.channel.server.name, message.channel.name),
+					text=f'{message.channel.server.name}#{message.channel.name}',
 					icon_url=message.channel.server.icon_url
 				)
 				for attachment in message.attachments:
@@ -101,7 +101,7 @@ async def on_message(message):
 						embed.set_image(url=attachment['url'])
 					else:
 						embed.add_field(
-							name='{} ({}B)'.format(attachment['filename'], attachment['size']),
+							name=f'{attachment["filename"]} ({attachment["size"]}B)',
 							value=attachment['url']
 						)
 				await bot.send_message(channel, embed=embed)
@@ -139,7 +139,7 @@ async def on_message(message):
 		else:
 			reply = 'k, nard'
 	elif match('^fuck off( [a-z#0-9]+)?$'):
-		reply = '{} has got work to do'.format(author.name)
+		reply = f'{author.name} has got work to do'
 	elif match('^smokes$'):
 		reply = 'let\'s go'
 	elif match('^safety$'):
@@ -177,14 +177,14 @@ async def on_message(message):
 			final_emote = ' <:sinaLove:349646763860426752>'
 		elif author.id in ADORABLE_PEOPLE:
 			final_emote = ' <:moon2cute:316630780313075712>'
-		reply = '<@{}> <:jay3hugged:332946887202308097>{}'.format(author.id, final_emote)
+		reply = f'<@{author.id}> <:jay3hugged:332946887202308097>{final_emote}'
 	elif match('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:jay3hugged:\d+>'):
 		final_emote = ''
 		if author.id in PARENTS:
 			final_emote = ' <:sinaLove:349646763860426752>'
 		elif author.id in ADORABLE_PEOPLE:
 			final_emote = ' <:moon2cute:316630780313075712>'
-		reply = '<@{}> <:calvinHug:326950539524964352>{}'.format(author.id, final_emote)
+		reply = f'<@{author.id}> <:calvinHug:326950539524964352>{final_emote}'
 	else:
 		await bot.process_commands(message)
 		return
@@ -204,7 +204,7 @@ async def zantoconf(ctx, *body):
 	ZANTOCONF[args[0]] = args[1]
 	with open(path.join(path.realpath(getcwd()), 'assets', 'zanto_conf.json'), 'w+') as zanto_conf:
 		json.dump(ZANTOCONF, zanto_conf)
-	return await bot.send_message(ctx.message.channel, '{} => {} - Configured'.format(args[0], args[1]))
+	return await bot.send_message(ctx.message.channel, f'{args[0]} => {args[1]} - Configured')
 
 
 @bot.command(pass_context=True)
@@ -227,7 +227,7 @@ async def zantomode(ctx, *sentence):
 	for c in sentence:
 		c = c.lower()
 		if c in ZANTOCONF:
-			message += '{} '.format(str(ZANTOCONF[c]))
+			message += f'{str(ZANTOCONF[c])} '
 		elif c == ' ':
 			message += space
 		elif c == '?':
@@ -235,7 +235,7 @@ async def zantomode(ctx, *sentence):
 		elif c == '!':
 			message += ':exclamation: '
 		elif re.compile('[a-z]', re.IGNORECASE).match(c):
-			message += ':regional_indicator_{}: '.format(c.lower())
+			message += f':regional_indicator_{c.lower()}: '
 	if message != ' ':
 		return await bot.send_message(ctx.message.channel, message)
 	return await bot.send_message(ctx.message.channel, 'Unable to emojify message :(')
@@ -261,7 +261,7 @@ async def config(ctx, flag, value, *extras):
 			global SIMULATE_USER
 			SIMULATE_USER = value
 			user = await bot.get_user_info(SIMULATE_USER)
-			value = '{}#{}'.format(user.name, user.discriminator)
+			value = f'{user.name}#{user.discriminator}'
 		for args in extras:
 			kvpair = args.split(':')
 			global SIMULATE_COUNT
@@ -290,7 +290,7 @@ async def config(ctx, flag, value, *extras):
 				json.dump(BRIDGECONF, bridge_conf)
 	return await bot.send_message(
 		ctx.message.channel,
-		'Updated: `{}` to `{}`{}'.format(flag, value, 'with extras `{}`'.format(extras) if len(extras) > 0 else '')
+		'Updated: `{}` to `{}`{}'.format(flag, value, f'with extras `{extras}`' if len(extras) > 0 else '')
 	)
 
 
@@ -299,36 +299,36 @@ async def debug(ctx, action, channel, *extras):
 	async def log(_channel, _message):
 		if isinstance(_channel, str):
 			_channel = bot.get_channel(_channel)
-		print('{} -> {}'.format('{}{}'.format(_channel.server.name, _channel.name), _message))
+		print(f'{_channel.server.name}{_channel.name} -> {_message}')
 		return await bot.send_message(_channel, embed=Embed(description=_message))
 	
 	if ctx.message.author.id != '202163416083726338':  # HellPie
 		return
 	if action == 'broadcast':
-		return await log(channel, ':bell: - Broadcast message: `{}`'.format(' '.join(extras)))
+		return await log(channel, f':bell: - Broadcast message: `{" ".join(extras)}`')
 	elif action == 'warn':
-		return await log(channel, ':warning: - {}'.format(' '.join(extras)))
+		return await log(channel, f':warning: - {" ".join(extras)}')
 	elif action == 'error':
-		return await log(channel, ':x: - {}'.format(' '.join(extras)))
+		return await log(channel, f':x: - {" ".join(extras)}')
 	elif action == 'success':
-		return await log(channel, ':white_check_mark: - {}'.format(' '.join(extras)))
+		return await log(channel, f':white_check_mark: - {" ".join(extras)}')
 	elif action == 'wait':
-		return await log(channel, ':hourglass_flowing_sand: - {}'.format(' '.join(extras)))
+		return await log(channel, f':hourglass_flowing_sand: - {" ".join(extras)}')
 	if action == 'log':
 		message = ''
 		if channel == 'servers':
 			for server in bot.servers:
-				message += '**{} (`{}`)**\n'.format(server.name, server.id)
+				message += f'**{server.name} (`{server.id}`)**\n'
 				for item in server.channels:
 					if item.type != ChannelType.voice:
-						message += '* `{}` -> {}\n'.format(item.id, item.name)
+						message += f'* `{item.id}` -> {item.name}\n'
 		parsed = ''
 		for line in message.split('\n'):
 			if len(parsed + line) > 2000:
 				await bot.send_message(ctx.message.channel, parsed)
-				parsed = '{}\n'.format(line)
+				parsed = f'{line}\n'
 			else:
-				parsed += '{}\n'.format(line)
+				parsed += f'{line}\n'
 		if parsed != '':
 			return await bot.send_message(ctx.message.channel, parsed)
 
