@@ -295,7 +295,7 @@ async def config(ctx, flag, value, *extras):
 
 
 @himemod.command(pass_context=True)
-async def debug(ctx, action, *extras):
+async def debug(ctx, action, channel, *extras):
 	async def log(_channel, _message):
 		if isinstance(_channel, str):
 			_channel = bot.get_channel(_channel)
@@ -305,23 +305,23 @@ async def debug(ctx, action, *extras):
 	if ctx.message.author.id != '202163416083726338':  # HellPie
 		return
 	if action == 'broadcast':
-		return await log(extras[0], ':bell: - Broadcast message: `{}`'.format(' '.join(extras[1:])))
+		return await log(channel, ':bell: - Broadcast message: `{}`'.format(' '.join(extras)))
 	elif action == 'warn':
-		return await log(extras[0], ':warning: - {}'.format(' '.join(extras[1:])))
+		return await log(channel, ':warning: - {}'.format(' '.join(extras)))
 	elif action == 'error':
-		return await log(extras[0], ':x: - {}'.format(' '.join(extras[1:])))
+		return await log(channel, ':x: - {}'.format(' '.join(extras)))
 	elif action == 'success':
-		return await log(extras[0], ':white_check_mark: - {}'.format(' '.join(extras[1:])))
+		return await log(channel, ':white_check_mark: - {}'.format(' '.join(extras)))
 	elif action == 'wait':
-		return await log(extras[0], ':hourglass_flowing_sand: - {}'.format(' '.join(extras[1:])))
+		return await log(channel, ':hourglass_flowing_sand: - {}'.format(' '.join(extras)))
 	if action == 'log':
 		message = ''
-		if extras[0] == 'servers':
+		if channel == 'servers':
 			for server in bot.servers:
 				message += '**{} (`{}`)**\n'.format(server.name, server.id)
-				for channel in server.channels:
-					if channel.type != ChannelType.voice:
-						message += '* `{}` -> {}\n'.format(channel.id, channel.name)
+				for item in server.channels:
+					if item.type != ChannelType.voice:
+						message += '* `{}` -> {}\n'.format(item.id, item.name)
 		parsed = ''
 		for line in message.split('\n'):
 			if len(parsed + line) > 2000:
