@@ -4,7 +4,7 @@ import re
 from random import randint
 
 # noinspection PyPackageRequirements
-from discord import Game, Embed, ChannelType
+from discord import Game, Embed, ChannelType, HTTPException
 # noinspection PyPackageRequirements
 from discord.ext.commands import Bot
 
@@ -248,7 +248,7 @@ async def himemod():
 
 
 @himemod.command(pass_context=True)
-async def config(ctx, flag, value, *extras):
+async def config(ctx, flag, value = None, *extras):
 	if ctx.message.author.id != '202163416083726338':  # HellPie
 		return
 	if flag == 'STATUS':
@@ -289,6 +289,25 @@ async def config(ctx, flag, value, *extras):
 					del BRIDGECONF[value]
 			with open(path.join(path.realpath(getcwd()), 'assets', 'bridge_conf.json'), 'w+') as bridge_conf:
 				json.dump(BRIDGECONF, bridge_conf)
+	elif flag == 'INVITE':
+		options = {
+			'max_age': 24,
+			'max_uses': 1,
+			'temporary': False,
+			'unique': False
+		}
+		try:
+			if value is not None:
+				for args in extras:
+					kvpair = args.split(':')
+					options[kvpair[0]] = kvpair[1]
+			invite = await bot.create_invite(
+				destination=bot.get_channel(value) if value is not None else ctx.message.channel,
+				options=options
+			)
+			return await bot.send_message(ctx.message.channel, 'Generated invite: {}'.format(invite.url))
+		except HTTPException as exception:
+			return await bot.send_message(ctx.message.channel, 'Unable to create invite: {}'.format(exception))
 	return await bot.send_message(
 		ctx.message.channel,
 		'Updated: `{}` to `{}`{}'.format(flag, value, f'with extras `{extras}`' if len(extras) > 0 else '')
