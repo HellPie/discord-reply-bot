@@ -155,7 +155,7 @@ async def on_message(message):
 		elif author.id == '202163416083726338':  # _HellPie
 			reply = 'ily too dad <3 <3 ^~^'
 		elif author.id == '210279248685039616':  # Amanda.
-			reply = 'ily too sweetheart <:calvinLOVE:349646699897159682>'
+			reply = 'ily too sweetheart <:valeLove:367687853720731658>'
 		elif author.id in MERCY_MAINS:
 			reply = 'cute angel main, ily too \\*-\\*'
 		elif author.id == '157725308127150081':  # Bjorn
@@ -172,20 +172,26 @@ async def on_message(message):
 		reply = 'WOW'
 	elif match('^no((rmie)|(o+b))s?!*$'):
 		reply = 'reeeeeeeeeeeeeeeeeeee, just like obi'
-	elif match('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:calvinHug:\d+>'):
+	elif match('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:(calvin|vale)Hug:\d+>'):
+		hug_emote = '<:calvinHugged:367687722024042497>'
+		if author.id in MERCY_MAINS:
+			hug_emote = '<:valeHugged:367687799270408202>'
 		final_emote = ''
 		if author.id in PARENTS:
-			final_emote = ' <:sinaLove:349646763860426752>'
+			final_emote = '<:nomyHeart:367687902433509397>'
 		elif author.id in ADORABLE_PEOPLE:
-			final_emote = ' <:moon2cute:316630780313075712>'
-		reply = f'<@{author.id}> <:jay3hugged:332946887202308097>{final_emote}'
-	elif match('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:jay3hugged:\d+>'):
+			final_emote = '<:jay3Kiss:367687910436110336>'
+		reply = f'<@{author.id}> {hug_emote} {final_emote}'
+	elif match('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:(jay3|calvin|vale)Hugged:\d+>'):
+		hug_emote = '<:calvinHug:326950539524964352>'
+		if author.id in MERCY_MAINS:
+			hug_emote = '<:valeHug:367687799488512010>'
 		final_emote = ''
 		if author.id in PARENTS:
-			final_emote = ' <:sinaLove:349646763860426752>'
+			final_emote = '<:nomyHeart:367687902433509397>'
 		elif author.id in ADORABLE_PEOPLE:
-			final_emote = ' <:moon2cute:316630780313075712>'
-		reply = f'<@{author.id}> <:calvinHug:326950539524964352>{final_emote}'
+			final_emote = '<:jay3Kiss:367687910436110336>'
+		reply = f'<@{author.id}> {hug_emote} {final_emote}'
 	else:
 		await bot.process_commands(message)
 		return
@@ -221,7 +227,6 @@ async def zantomode(ctx, *sentence):
 			json.dump({}, zanto_conf)
 	with open(_file, 'r') as zanto_conf:
 		ZANTOCONF = json.load(zanto_conf)
-	# space = '<:regional_indicator_none:336187638514057226> '  # Custom emoji for an empty blue square
 	space = '<:jay3thinking:332958429083729933> '
 	message = ' '
 	sentence = ' '.join(sentence)
