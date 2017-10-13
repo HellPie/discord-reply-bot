@@ -45,8 +45,13 @@ REPLIES_STATUS = True
 SIMULATE_USER = None
 SIMULATE_COUNT = 0
 
+ZANTOCONF_PATH = path.join(path.realpath(getcwd()), 'assets', f'{CONFIG["STORAGE"]["ZANTOCONF"]}.json')
+BRIDGECONF_PATH = path.join(path.realpath(getcwd()), 'assets', f'{CONFIG["STORAGE"]["BRIDGECONF"]}.json')
+
 ZANTOCONF = {}
 BRIDGECONF = {}
+
+ZANTOCONF_BLACKLIST = [' ', '!', '?']
 
 bot = Bot(CONFIG.get(section='BOT', option='PREFIX').split(' '), description=CONFIG['BOT']['DESCRIPTION'])
 
@@ -56,6 +61,20 @@ async def on_ready():
 	print('\n#------------------------------------------------------------------------------#')
 	print(f'\tLOGIN: {bot.user.name}#{bot.user.discriminator} ({bot.user.id})')
 	print('#------------------------------------------------------------------------------#\n')
+	if not path.exists(ZANTOCONF_PATH):
+		with open(ZANTOCONF_PATH, 'w') as zanto_conf:
+			json.dump({}, zanto_conf)
+	else:
+		with open(ZANTOCONF_PATH, 'r') as zanto_conf:
+			global ZANTOCONF
+			ZANTOCONF = json.load(zanto_conf)
+	if not path.exists(BRIDGECONF_PATH):
+		with open(BRIDGECONF_PATH, 'w') as bridge_conf:
+			json.dump({}, bridge_conf)
+	else:
+		with open(BRIDGECONF_PATH, 'r') as bridge_conf:
+			global BRIDGECONF
+			BRIDGECONF = json.load(bridge_conf)
 
 
 @bot.event
@@ -63,12 +82,8 @@ async def on_message(message):
 	def match(_expr):
 		return re.compile(_expr, re.IGNORECASE).match(message.content)
 	
-	_file = path.join(path.realpath(getcwd()), 'assets', 'bridge_conf.json')
-	if not path.exists(_file):
-		with open(_file, 'w+') as bridge_conf:
-			json.dump({}, bridge_conf)
 	global BRIDGECONF
-	with open(_file, 'r') as bridge_conf:
+	with open(BRIDGECONF_PATH, 'r') as bridge_conf:
 		BRIDGECONF = json.load(bridge_conf)
 	if message.channel.id in BRIDGECONF:
 		print('[{}] {}#{}@{}/{} ->\n{}\n{}\n'.format(
@@ -200,18 +215,17 @@ async def on_message(message):
 
 
 @bot.command(pass_context=True)
-async def zantoconf(ctx, *body):
+async def zantoconf(ctx, character, *emote):
 	if ctx.message.server.id in GUILDS_BLACKLIST:
 		return
 	if ctx.message.author.id not in PARENTS and ctx.message.author.id not in ZANTOMODE_PEOPLE:
 		return
-	args = ' '.join(body).split(' as ')
-	if len(args) < 2:
-		return await bot.send_message(ctx.message.channel, 'Need something like \':$zantoconf <character> as <emote>\'')
-	ZANTOCONF[args[0]] = args[1]
-	with open(path.join(path.realpath(getcwd()), 'assets', 'zanto_conf.json'), 'w+') as zanto_conf:
+	if character in ZANTOCONF_BLACKLIST:
+		return await bot.send_message(ctx.message.channel, f'{character} is special and cannot be changed.')
+	ZANTOCONF[str(character)] = ''.join(emote)
+	with open(ZANTOCONF_PATH, 'w') as zanto_conf:
 		json.dump(ZANTOCONF, zanto_conf)
-	return await bot.send_message(ctx.message.channel, f'{args[0]} => {args[1]} - Configured')
+	return await bot.send_message(ctx.message.channel, f'{character} => {"".join(emote)} - Configured')
 
 
 @bot.command(pass_context=True)
@@ -221,13 +235,9 @@ async def zantomode(ctx, *sentence):
 	if ctx.message.author.id not in PARENTS and ctx.message.author.id not in ZANTOMODE_PEOPLE:
 		return
 	global ZANTOCONF
-	_file = path.join(path.realpath(getcwd()), 'assets', 'zanto_conf.json')
-	if not path.exists(_file):
-		with open(_file, 'w+') as zanto_conf:
-			json.dump({}, zanto_conf)
-	with open(_file, 'r') as zanto_conf:
+	with open(ZANTOCONF_PATH, 'r') as zanto_conf:
 		ZANTOCONF = json.load(zanto_conf)
-	space = '<:jay3thinking:332958429083729933> '
+	space = '<:jay3Thinking:368487066755006465> '
 	message = ' '
 	sentence = ' '.join(sentence)
 	for c in sentence:
@@ -284,7 +294,6 @@ async def config(ctx, flag, value = None, *extras):
 		elif value == 'OFF':
 			REPLIES_STATUS = False
 	elif flag == 'BRIDGE':
-		global BRIDGECONF
 		if value is not None:
 			for args in extras:
 				kvpair = args.split(':')
@@ -292,7 +301,7 @@ async def config(ctx, flag, value = None, *extras):
 					BRIDGECONF[value] = kvpair[1]
 				if kvpair[0] == 'stop' and value in BRIDGECONF:
 					del BRIDGECONF[value]
-			with open(path.join(path.realpath(getcwd()), 'assets', 'bridge_conf.json'), 'w+') as bridge_conf:
+			with open(BRIDGECONF_PATH, 'w+') as bridge_conf:
 				json.dump(BRIDGECONF, bridge_conf)
 	elif flag == 'INVITE':
 		options = {

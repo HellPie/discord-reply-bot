@@ -7,6 +7,11 @@ __CONFIG_DEFAULT = {
 	'BOT': {
 		'PREFIX': ':$',
 		'DESCRIPTION': ''
+	},
+	
+	'STORAGE': {
+		'ZANTOCONF': 'conf_zantomode',
+		'BRIDGECONF': 'conf_bridges'
 	}
 }
 
