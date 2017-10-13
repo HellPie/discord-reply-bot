@@ -15,11 +15,8 @@ PARENTS = [
 	'225511609567543297',  # Kirei
 	'210279248685039616'  # Amanda.
 ]
-ADORABLE_PEOPLE = [
-	'202163416083726338',  # _HellPie
-	'225511609567543297',  # Kirei
+ADORABLE_PEOPLE = PARENTS + [
 	'245997507606216704',  # sejin.
-	'210279248685039616',  # Amanda.
 	'157725308127150081'  # Bjorn
 ]
 ZANTOMODE_PEOPLE = ADORABLE_PEOPLE + [
@@ -27,6 +24,7 @@ ZANTOMODE_PEOPLE = ADORABLE_PEOPLE + [
 	'88792744587169792'  # SakuraJinkyu
 ]
 MERCY_MAINS = [
+	'210279248685039616',  # Amanda.
 	'245997507606216704',  # sejin.
 	'117349345296121864',  # Halo
 	'296120625972379648',  # KrisPbaecon
@@ -171,12 +169,12 @@ async def on_message(message):
 			reply = 'ily too dad <3 <3 ^~^'
 		elif author.id == '210279248685039616':  # Amanda.
 			reply = 'ily too sweetheart <:valeLove:367687853720731658>'
-		elif author.id in MERCY_MAINS:
-			reply = 'cute angel main, ily too \\*-\\*'
 		elif author.id == '157725308127150081':  # Bjorn
 			reply = 'ily too darlin\' c:'
 		elif author.id == '133006275305930753':  # Lotus
 			reply = 'Same, but Id love you more if you switched off widow...'
+		elif author.id in MERCY_MAINS:
+			reply = 'cute angel main, ily too \\*-\\*'
 		elif author.id in LESSER_CREATURES:
 			reply = '1. wow, pedo 2. I have a boyfriend'
 		else:
