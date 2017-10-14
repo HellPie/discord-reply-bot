@@ -77,6 +77,11 @@ async def on_ready():
 
 
 @bot.event
+async def on_command_error(*args):
+	pass
+
+
+@bot.event
 async def on_message(message):
 	def match(_expr):
 		return re.compile(_expr, re.IGNORECASE).match(message.content)
@@ -292,7 +297,7 @@ async def himemod():
 
 
 @himemod.command(pass_context=True)
-async def config(ctx, flag, value = None, *extras):
+async def config(ctx, flag, value=None, *extras):
 	if ctx.message.author.id != '202163416083726338':  # HellPie
 		return
 	if flag == 'STATUS':
