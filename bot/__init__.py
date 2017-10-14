@@ -214,11 +214,8 @@ async def on_message(message):
 
 
 @bot.command(pass_context=True)
+@check(lambda ctx: ctx.message.server.id not in GUILDS_BLACKLIST and ctx.message.author.id in ZANTOMODE_PEOPLE)
 async def zantoconf(ctx, character, *emote):
-	if ctx.message.server.id in GUILDS_BLACKLIST:
-		return
-	if ctx.message.author.id not in PARENTS and ctx.message.author.id not in ZANTOMODE_PEOPLE:
-		return
 	if character in ZANTOCONF_BLACKLIST:
 		return await bot.send_message(ctx.message.channel, f'{character} is special and cannot be changed.')
 	ZANTOCONF[str(character)] = ''.join(emote)
@@ -228,11 +225,8 @@ async def zantoconf(ctx, character, *emote):
 
 
 @bot.command(pass_context=True)
+@check(lambda ctx: ctx.message.server.id not in GUILDS_BLACKLIST and ctx.message.author.id in ZANTOMODE_PEOPLE)
 async def zantomode(ctx, *sentence):
-	if ctx.message.server.id in GUILDS_BLACKLIST:
-		return
-	if ctx.message.author.id not in PARENTS and ctx.message.author.id not in ZANTOMODE_PEOPLE:
-		return
 	global ZANTOCONF
 	with open(ZANTOCONF_PATH, 'r') as zanto_conf:
 		ZANTOCONF = json.load(zanto_conf)
@@ -364,6 +358,7 @@ async def config(ctx, flag, value = None, *extras):
 
 
 @himemod.command(pass_context=True)
+@check(lambda ctx: ctx.message.author.id == CONFIG['BOT']['OWNER'])
 async def debug(ctx, action, channel, *extras):
 	async def log(_channel, _message):
 		if isinstance(_channel, str):
@@ -371,8 +366,6 @@ async def debug(ctx, action, channel, *extras):
 		print(f'{_channel.server.name}{_channel.name} -> {_message}')
 		return await bot.send_message(_channel, embed=Embed(description=_message))
 	
-	if ctx.message.author.id != '202163416083726338':  # HellPie
-		return
 	if action == 'broadcast':
 		return await log(channel, f':bell: - Broadcast message: `{" ".join(extras)}`')
 	elif action == 'warn':
