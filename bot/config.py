@@ -6,7 +6,8 @@ __CONFIG_DEFAULT = {
 	
 	'BOT': {
 		'PREFIX': ':$',
-		'DESCRIPTION': ''
+		'DESCRIPTION': '',
+		'OWNER': ''
 	},
 	
 	'STORAGE': {

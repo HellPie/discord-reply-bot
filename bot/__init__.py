@@ -4,10 +4,11 @@ import re
 from random import randint
 
 # noinspection PyPackageRequirements
-from discord import Game, Embed, ChannelType, HTTPException
+from discord import Game, Embed, ChannelType, HTTPException, Forbidden
 # noinspection PyPackageRequirements
-from discord.ext.commands import Bot
+from discord.ext.commands import Bot, check
 
+from bot.utils import build_embed
 from bot.config import CONFIG
 
 PARENTS = [
@@ -253,6 +254,42 @@ async def zantomode(ctx, *sentence):
 	if message != ' ':
 		return await bot.send_message(ctx.message.channel, message)
 	return await bot.send_message(ctx.message.channel, 'Unable to emojify message :(')
+
+
+@bot.group()
+async def hime():
+	pass
+
+
+@hime.command(pass_context=True)
+@check(lambda ctx: ctx.message.author.id == CONFIG['BOT']['OWNER'])
+async def status(ctx, game: str = None, url: str = None):
+	is_empty = game is None or game.isspace()
+	is_stream = not is_empty and url is not None and len(url) > 0 and not url.isspace()
+	await bot.change_presence(game=None if is_empty else Game(
+		name=game,
+		type=1 if is_stream else 0,
+		url=url if is_stream else None
+	))
+	return await bot.send_message(ctx.message.channel, embed=build_embed(ctx, '{} status{}{}.'.format(
+		'Cleaned' if is_empty else 'Changed',
+		'' if is_empty else f' to: `{"Streaming" if is_stream else "Playing"} {game}`',
+		f'at `{url}`' if is_stream else ''
+	)))
+
+
+@hime.command(pass_context=True)
+@check(lambda ctx: ctx.message.author.id == CONFIG['BOT']['OWNER'])
+async def nickname(ctx, nick: str = None):
+	is_empty = nick is None or nick.isspace()
+	try:
+		await ctx.bot.change_nickname(member=ctx.message.server.me, nickname=None if is_empty else nick[:32])
+	except Forbidden:
+		return await bot.send_message(ctx.message.channel, embed=build_embed(ctx, 'Missing permissions.'))
+	return await bot.send_message(ctx.message.channel, embed=build_embed(ctx, '{} nickname{}.'.format(
+		'Cleaned' if is_empty else 'Changed',
+		'' if is_empty else f' to `{nick[:32]}`'
+	)))
 
 
 @bot.group()
