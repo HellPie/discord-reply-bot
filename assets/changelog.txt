@@ -1,4 +1,4 @@
-Welcome to `Hime 3.0`. A lot of things changed since the last automated changelog.
+Welcome to `Hime 3.1`. A lot of things changed since the last automated changelog.
 Let's begin with the most obvious change: I rewrote the changelog broadcasting entirely. (The next changelog will be much shorter I promise)
 
 Changes since **`1.10`**:

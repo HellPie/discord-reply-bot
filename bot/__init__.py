@@ -10,7 +10,7 @@ from discord.ext.commands import Bot, Context, check
 from bot.config import CONFIG
 from bot.utils import build_embed, OpStatus
 
-VERSION = '3.0'
+VERSION = '3.1'
 
 PARENTS = [
 	'202163416083726338',  # _HellPie
