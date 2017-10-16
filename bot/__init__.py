@@ -1,15 +1,14 @@
-from os import path, getcwd
 import json
 import re
+from os import path, getcwd
 from random import randint
+from typing import Union
 
-# noinspection PyPackageRequirements
-from discord import Game, Embed, ChannelType, HTTPException, Forbidden
-# noinspection PyPackageRequirements
-from discord.ext.commands import Bot, check
+from discord import Message, Embed, Server, Game, Permissions, Channel, PrivateChannel, ChannelType, HTTPException, Forbidden
+from discord.ext.commands import Bot, Context, check
 
-from bot.utils import build_embed
 from bot.config import CONFIG
+from bot.utils import build_embed, OpStatus
 
 PARENTS = [
 	'202163416083726338',  # _HellPie
@@ -36,8 +35,6 @@ LESSER_CREATURES = [
 	'280096430356430848'  # Pmik
 ]
 GUILDS_BLACKLIST = []
-
-CHANCE_FACTOR = 1  # 20%
 
 REPLIES_STATUS = True
 
@@ -82,7 +79,7 @@ async def on_command_error(*args):
 
 
 @bot.event
-async def on_message(message):
+async def on_message(message: Message):
 	def match(_expr):
 		return re.compile(_expr, re.IGNORECASE).match(message.content)
 	
@@ -220,13 +217,13 @@ async def on_message(message):
 
 @bot.command(pass_context=True)
 @check(lambda ctx: ctx.message.server.id not in GUILDS_BLACKLIST and ctx.message.author.id in ZANTOMODE_PEOPLE)
-async def zantoconf(ctx, character, *emote):
+async def zantoconf(ctx: Context, character: chr, emote: str):
 	if character in ZANTOCONF_BLACKLIST:
 		return await bot.send_message(ctx.message.channel, f'{character} is special and cannot be changed.')
-	ZANTOCONF[str(character)] = ''.join(emote)
+	ZANTOCONF[str(character)] = emote
 	with open(ZANTOCONF_PATH, 'w') as zanto_conf:
 		json.dump(ZANTOCONF, zanto_conf)
-	return await bot.send_message(ctx.message.channel, f'{character} => {"".join(emote)} - Configured')
+	return await bot.send_message(ctx.message.channel, f'{character} => {emote} - Configured')
 
 
 @bot.command(pass_context=True)
@@ -256,13 +253,13 @@ async def zantomode(ctx, *sentence):
 
 
 @bot.group()
+@check(lambda ctx: ctx.message.author.id == CONFIG['BOT']['OWNER'])
 async def hime():
 	pass
 
 
-@hime.command(pass_context=True)
-@check(lambda ctx: ctx.message.author.id == CONFIG['BOT']['OWNER'])
-async def status(ctx, game: str = None, url: str = None):
+@hime.command(pass_context=True, aliases=['presence'])
+async def status(ctx: Context, game: str = None, url: str = None) -> Message:
 	is_empty = game is None or game.isspace()
 	is_stream = not is_empty and url is not None and len(url) > 0 and not url.isspace()
 	await bot.change_presence(game=None if is_empty else Game(
@@ -277,18 +274,70 @@ async def status(ctx, game: str = None, url: str = None):
 	)))
 
 
-@hime.command(pass_context=True)
-@check(lambda ctx: ctx.message.author.id == CONFIG['BOT']['OWNER'])
-async def nickname(ctx, nick: str = None):
+@hime.command(pass_context=True, aliases=['nick'])
+async def nickname(ctx: Context, nick: str = None) -> Message:
 	is_empty = nick is None or nick.isspace()
 	try:
 		await ctx.bot.change_nickname(member=ctx.message.server.me, nickname=None if is_empty else nick[:32])
 	except Forbidden:
-		return await bot.send_message(ctx.message.channel, embed=build_embed(ctx, 'Missing permissions.'))
+		return await bot.send_message(
+			ctx.message.channel,
+			embed=build_embed(ctx, 'Permission `Change Nickname` not granted on this server.', status=OpStatus.FAILURE)
+		)
+	except HTTPException:
+		return await bot.send_message(
+			ctx.message.channel,
+			embed=build_embed(ctx, 'Nickname change denied by the Discord API.', status=OpStatus.FAILURE)
+		)
 	return await bot.send_message(ctx.message.channel, embed=build_embed(ctx, '{} nickname{}.'.format(
 		'Cleaned' if is_empty else 'Changed',
 		'' if is_empty else f' to `{nick[:32]}`'
 	)))
+
+
+@hime.command(pass_context=True)
+async def invite(ctx: Context, dest: Union[Channel, Server], timer: int = 0, uses: int = 0, temp: bool = False):
+	options = {
+		'max_age': timer,
+		'max_uses': uses,
+		'temporary': temp,
+		'unique': True
+	}
+	try:
+		created = await bot.create_invite(destination=dest, options=options)
+	except HTTPException:
+		if dest.__class__ == Server:
+			has_permission = Permissions.create_instant_invite in dest.me.server_permissions
+		elif dest.__class__ == Channel or dest.__class__ == PrivateChannel:
+			has_permission = Permissions.create_instant_invite in dest.permissions_for(dest.server.me)
+		else:
+			return await bot.send_message(ctx.message.channel, embed=build_embed(
+				ctx,
+				f'Destination (`{dest}`) is not a valid channel or server.',
+				status=OpStatus.FAILURE
+			))
+		if has_permission:
+			return await bot.send_message(
+				ctx.message.channel,
+				embed=build_embed(ctx, 'Invite creation denied by the Discord API.', status=OpStatus.FAILURE)
+			)
+		return await bot.send_message(ctx.message.channel, embed=build_embed(
+			ctx,
+			'Permission `Create Instant Invite` not granted on {} `{}`'.format(
+				'server' if dest.__class__ == Server else 'channel',
+				dest.name
+			),
+			status=OpStatus.FAILURE
+		))
+	return await bot.send_message(ctx.message.channel, embed=build_embed(
+		ctx,
+		'Created invite: {} to `{}` (can be used `{}` times and expires in `{}` seconds).'.format(
+			created.url,
+			dest.name,
+			created.max_uses,
+			created.max_age
+		)
+	))
 
 
 @bot.group()
