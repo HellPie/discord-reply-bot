@@ -352,7 +352,7 @@ async def debug():
 @debug.command(pass_context=True)
 async def simulate(ctx: Context, user: User = None, count: int = 0):
 	if user is None or count < 1:
-		if SIMULATE_CONFIG['COUNT'] < 1:
+		if user is not None:
 			count = 1
 			await bot.send_message(ctx.message.channel, embed=build_embed(
 				ctx,
@@ -367,7 +367,7 @@ async def simulate(ctx: Context, user: User = None, count: int = 0):
 			if user is None:
 				return await bot.send_message(
 					ctx.message.channel,
-					embed=build_embed(ctx, 'No simulation running.', status=OpStatus.WARNING)
+					embed=build_embed(ctx, 'No simulation running.', status=OpStatus.FAILURE)
 				)
 			return await bot.send_message(ctx.message.channel, embed=build_embed(
 				ctx,
@@ -386,7 +386,7 @@ async def simulate(ctx: Context, user: User = None, count: int = 0):
 			user.name,
 			user.mention,
 			count,
-			bot.command_prefix.split(' ')[0]
+			bot.command_prefix[0]
 		),
 		status=OpStatus.WARNING
 	))
