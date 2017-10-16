@@ -52,11 +52,11 @@ ZANTOCONF = {}
 ZANTOCONF_BLACKLIST = [' ', '!', '?']
 
 LOG_LEVELS = {
-	'LOG': '\N{}',
-	'INFO': '\N{}',
-	'SUCCESS': '\N{}',
-	'WARNING': '\N{}',
-	'ERROR': '\N{}'
+	'LOG': '\N{PAGE FACING UP}',
+	'INFO': '\N{BELL}',
+	'SUCCESS': '\N{WHITE HEAVY CHECK MARK}',
+	'WARNING': '\N{WARNING}',
+	'ERROR': '\N{CROSS MARK}'
 }
 
 bot = Bot(CONFIG.get(section='BOT', option='PREFIX').split(' '), description=CONFIG['BOT']['DESCRIPTION'])
