@@ -374,7 +374,7 @@ async def debug():
 
 
 @debug.command(pass_context=True)
-async def simulate(ctx: Context, user: User = None, count: int = 0):
+async def simulate(ctx: Context, user: User = None, count: int = 0) -> Message:
 	if user is None or count < 1:
 		if user is not None:
 			count = 1
@@ -399,8 +399,7 @@ async def simulate(ctx: Context, user: User = None, count: int = 0):
 					user.name,
 					user.mention,
 					count
-				),
-				status=OpStatus.SUCCESS
+				)
 			))
 	SIMULATE_CONFIG['USER'] = user
 	SIMULATE_CONFIG['COUNT'] = count
@@ -495,7 +494,7 @@ async def data():
 
 
 @data.command(pass_context=True)
-async def servers(ctx):
+async def servers(ctx: Context) -> Message:
 	name = ctx.message.server.me.nick if ctx.message.server.me.nick is not None else bot.user.name
 	template = Embed().set_author(name=name, icon_url=bot.user.avatar_url).to_dict()
 	first = template.copy()
@@ -523,7 +522,7 @@ async def servers(ctx):
 
 
 @data.command(pass_context=True)
-async def channels(ctx, server: Server):
+async def channels(ctx: Context, server: Server) -> Message:
 	name = ctx.message.server.me.nick if ctx.message.server.me.nick is not None else bot.user.name
 	template = Embed().set_author(name=name, icon_url=bot.user.avatar_url).to_dict()
 	first = template.copy()
