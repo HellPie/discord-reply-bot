@@ -119,7 +119,7 @@ async def on_message(message: Message):
 					icon_url=message.channel.server.icon_url
 				)
 				for attachment in message.attachments:
-					if attachment['filename'].split('.')[-1].lower() in ['png', 'jpg', 'jpeg', 'gif', 'webp']:
+					if attachment['filename'].split('.')[-1].upper() in ['PNG', 'JPG', 'JPEG', 'GIF', 'WEBP']:
 						embed.set_image(url=attachment['url'])
 					else:
 						embed.add_field(
@@ -239,7 +239,7 @@ async def zantomode(ctx, *sentence):
 	message = ' '
 	sentence = ' '.join(sentence)
 	for c in sentence:
-		c = c.lower()
+		c = c.upper()
 		if c in ZANTOCONF:
 			message += f'{str(ZANTOCONF[c])} '
 		elif c == ' ':
