@@ -54,6 +54,14 @@ BRIDGECONF = {}
 
 ZANTOCONF_BLACKLIST = [' ', '!', '?']
 
+LOG_LEVELS = {
+	'LOG': '\N{}',
+	'INFO': '\N{}',
+	'SUCCESS': '\N{}',
+	'WARNING': '\N{}',
+	'ERROR': '\N{}'
+}
+
 bot = Bot(CONFIG.get(section='BOT', option='PREFIX').split(' '), description=CONFIG['BOT']['DESCRIPTION'])
 
 
@@ -406,6 +414,131 @@ async def simulate(ctx: Context, user: User = None, count: int = 0):
 		),
 		status=OpStatus.WARNING
 	))
+
+
+@debug.command(pass_context=True)
+async def log(ctx: Context, dest: Channel, message: str, level: str = 'INFO') -> Message:
+	level = level.upper()
+	if level not in LOG_LEVELS.values():
+		return await bot.send_message(ctx.message.channel, embed=build_embed(
+			ctx,
+			f'Log level can be one of: `{LOG_LEVELS.values()}`',
+			status=OpStatus.FAILURE
+		))
+	prefix = LOG_LEVELS[level]
+	if message.isspace():
+		return await bot.send_message(ctx.message.channel, embed=build_embed(
+			ctx,
+			'Cannot send an empty message',
+			status=OpStatus.FAILURE
+		))
+	try:
+		await bot.send_message(dest, embed=build_embed(ctx, f'{prefix} - {message}', status=OpStatus.NONE))
+	except InvalidArgument:
+		return await bot.send_message(ctx.message.channel, embed=build_embed(
+			ctx,
+			f'Channel `{dest.name if "name" in dest else "N/A"}` ({dest}) is not a valid destination.',
+			status=OpStatus.FAILURE
+		))
+	except NotFound:
+		return await bot.send_message(ctx.message.channel, embed=build_embed(
+			ctx,
+			f'Channel `{dest.name}` (<#{dest.id}>) could not be found.',
+			status=OpStatus.FAILURE
+		))
+	except Forbidden:
+		return await bot.send_message(ctx.message.channel, embed=build_embed(
+			ctx,
+			'Permission `Send Messages` not granted on server `{}` at channel `{}` (<#{}>).'.format(
+				dest.server.name,
+				dest.name,
+				dest.id
+			),
+			status=OpStatus.FAILURE
+		))
+	except HTTPException:
+		return await bot.send_message(ctx.message.channel, embed=build_embed(
+			ctx,
+			'Message operation was denied by the Discord API.',
+			status=OpStatus.FAILURE
+		))
+	return await bot.send_message(ctx.message.channel, embed=build_embed(
+		ctx,
+		'Send message to server `{}` on channel `{}` (<#{}>).\n\n{}'.format(
+			dest.server.name,
+			dest.name,
+			dest.id,
+			message
+		)
+	))
+
+
+@debug.command(pass_context=True)
+async def broadcast(ctx: Context, message: str, level: str = 'log') -> Message:
+	count = 0
+	for server in bot.servers:
+		for channel in server.channels:
+			if channel.type not in [ChannelType.text, ChannelType.group]:
+				continue
+			if 'general' in channel.name or 'off-topic' in channel.name:
+				await log(ctx, channel, message, level)
+				count += 1
+	return await bot.send_message(
+		ctx.message.channel,
+		embed=build_embed(ctx, f'Broadcasted message to `{count}` servers.\n\n{message}', status=OpStatus.WARNING)
+	)
+
+
+@debug.group(name='list')
+async def data():
+	pass
+
+
+@data.command(pass_context=True)
+async def servers(ctx):
+	name = ctx.message.server.me.nick if ctx.message.server.me.nick is not None else bot.user.name
+	template = Embed().set_author(name=name, icon_url=bot.user.avatar_url).to_dict()
+	first = template.copy()
+	first['title'] = 'List of servers'
+	first['description'] = f'Counting `{len(bot.servers)}` servers for this Bot instance.'
+	await bot.send_message(ctx.message.channel, embed=Embed.from_data(first))
+	embed = Embed.from_data(template)
+	for server in bot.servers:
+		value = f'- Owner: `{server.owner.name}` ({server.owner.mention} - `{server.owner.id}`)'
+		value += f'\n- Created: `{server.created_at.strftime("%Y-%m-%d %H:%M:%S")}`'
+		value += f'\n- Icon: `{server.icon_url}`\n'
+		value += f'\n- Region: {server.region if isinstance(server.region, str) else server.region.value}'
+		value += f'\n- Channels: `{len(server.channels)}`\n- Members: `{len(server.members)}`'
+		if len(server.features) > 0:
+			value += f'\n- Features: `{server.features}`'
+			if 'INVITE_SPLASH' in server.features:
+				value += f'- Splash: `{server.splash}`\n- Splash URL: `{server.splash_url}`'
+		embed.add_field(name=f'(`{server.id}`) - {server.name}', value=value)
+		if len(embed.fields) == 25 or len(str(embed.to_dict())) > 5000:
+			await bot.send_message(ctx.message.channel, embed=embed)
+			embed = Embed.from_data(template)
+	if len(embed.fields) > 0:
+		await bot.send_message(ctx.message.channel, embed=embed)
+		return await bot.send_message(ctx.message.channel, embed=build_embed(ctx, 'Listed all servers with details.'))
+
+
+@data.command(pass_context=True)
+async def channels(ctx, server: Server):
+	name = ctx.message.server.me.nick if ctx.message.server.me.nick is not None else bot.user.name
+	template = Embed().set_author(name=name, icon_url=bot.user.avatar_url).to_dict()
+	first = template.copy()
+	first['title'] = f'List of channels for server `{server.name}` (`{server.id}`)'
+	first['description'] = f'Counting `{len(server.channels)}` channels for this server.'
+	await bot.send_message(ctx.message.channel, embed=Embed.from_data(first))
+	embed = Embed.from_data(template)
+	for channel in server.channels:
+		embed.add_field(name=f'`{channel.name}` ({channel.mention} - `{channel.id}`', value=channel.topic)
+		if len(embed.fields) == 25 or len(str(embed.to_dict())) > 5000:
+			await bot.send_message(ctx.message.channel, embed=embed)
+			embed = Embed.from_data(template)
+	if len(embed.fields) > 0:
+		await bot.send_message(ctx.message.channel, embed=embed)
+		return await bot.send_message(ctx.message.channel, embed=build_embed(ctx, 'Listed all channels with details.'))
 
 
 @bot.group()
