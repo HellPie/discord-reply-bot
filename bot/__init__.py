@@ -4,7 +4,7 @@ from os import path, getcwd
 from random import randint
 from typing import Union
 
-from discord import Message, Embed, Server, Game, Permissions, Channel, PrivateChannel, ChannelType, HTTPException, Forbidden
+from discord import User, Message, Embed, Server, Game, Permissions, Channel, PrivateChannel, ChannelType, HTTPException, Forbidden
 from discord.ext.commands import Bot, Context, check
 
 from bot.config import CONFIG
@@ -40,6 +40,11 @@ REPLIES_STATUS = True
 
 SIMULATE_USER = None
 SIMULATE_COUNT = 0
+
+SIMULATE_CONFIG = {
+	'USER': None,
+	'COUNT': 0
+}
 
 ZANTOCONF_PATH = path.join(path.realpath(getcwd()), 'assets', f'{CONFIG["STORAGE"]["ZANTOCONF"]}.json')
 BRIDGECONF_PATH = path.join(path.realpath(getcwd()), 'assets', f'{CONFIG["STORAGE"]["BRIDGECONF"]}.json')
@@ -128,11 +133,9 @@ async def on_message(message: Message):
 		await bot.process_commands(message)
 		return
 	author = message.author
-	global SIMULATE_USER
-	global SIMULATE_COUNT
-	if SIMULATE_USER is not None and SIMULATE_COUNT > 0:
-		author = await bot.get_user_info(SIMULATE_USER)
-		SIMULATE_COUNT -= 1
+	if SIMULATE_CONFIG['USER'] is not None and SIMULATE_CONFIG['COUNT'] > 0:
+		author = SIMULATE_CONFIG['USER']
+		SIMULATE_CONFIG['COUNT'] -= 1
 	if match('^ay[y]+$'):
 		reply = 'lmao'
 	elif match('^wew$'):
@@ -341,6 +344,55 @@ async def invite(ctx: Context, dest: Union[Channel, Server], timer: int = 0, use
 
 
 @bot.group()
+@check(lambda ctx: ctx.message.author.id == CONFIG['BOT']['OWNER'])
+async def debug():
+	pass
+
+
+@debug.command(pass_context=True)
+async def simulate(ctx: Context, user: User = None, count: int = 0):
+	if user is None or count < 1:
+		if SIMULATE_CONFIG['COUNT'] < 1:
+			count = 1
+			await bot.send_message(ctx.message.channel, embed=build_embed(
+				ctx,
+				'Simulation mode will be enabled for one message.',
+				status=OpStatus.WARNING
+			))
+		else:
+			user = SIMULATE_CONFIG['USER']
+			count = SIMULATE_CONFIG['COUNT']
+			SIMULATE_CONFIG['USER'] = None
+			SIMULATE_CONFIG['COUNT'] = 0
+			if user is None:
+				return await bot.send_message(
+					ctx.message.channel,
+					embed=build_embed(ctx, 'No simulation running.', status=OpStatus.WARNING)
+				)
+			return await bot.send_message(ctx.message.channel, embed=build_embed(
+				ctx,
+				'Stopped simulating user `{}` ({}) with `{}` messages left.'.format(
+					user.name,
+					user.mention,
+					count
+				),
+				status=OpStatus.SUCCESS
+			))
+	SIMULATE_CONFIG['USER'] = user
+	SIMULATE_CONFIG['COUNT'] = count
+	return await bot.send_message(ctx.message.channel, embed=build_embed(
+		ctx,
+		'Simulating user `{}` ({}) for the next `{}` messages. Use `{}debug simulate` to end prematurely.'.format(
+			user.name,
+			user.mention,
+			count,
+			bot.command_prefix.split(' ')[0]
+		),
+		status=OpStatus.WARNING
+	))
+
+
+@bot.group()
 async def himemod():
 	pass
 
@@ -411,9 +463,9 @@ async def config(ctx, flag, value=None, *extras):
 	)
 
 
-@himemod.command(pass_context=True)
+@himemod.command(pass_context=True, alias=['debug'])
 @check(lambda ctx: ctx.message.author.id == CONFIG['BOT']['OWNER'])
-async def debug(ctx, action, channel, *extras):
+async def old_debug(ctx, action, channel, *extras):
 	async def log(_channel, _message):
 		if isinstance(_channel, str):
 			_channel = bot.get_channel(_channel)
