@@ -299,11 +299,11 @@ async def nickname(ctx: Context, nick: str = None) -> Message:
 
 
 @hime.command(pass_context=True)
-async def invite(ctx: Context, dest: Union[Channel, Server], timer: int = 0, uses: int = 0, temp: bool = False):
+async def invite(ctx: Context, dest: Union[Channel, Server], time: int = 0, use: int = 0, tmp: bool = False) -> Message:
 	options = {
-		'max_age': timer,
-		'max_uses': uses,
-		'temporary': temp,
+		'max_age': time,
+		'max_uses': use,
+		'temporary': tmp,
 		'unique': True
 	}
 	try:
@@ -341,6 +341,22 @@ async def invite(ctx: Context, dest: Union[Channel, Server], timer: int = 0, use
 			created.max_age
 		)
 	))
+
+
+@hime.group()
+@check(lambda ctx: ctx.message.author.id == CONFIG['BOT']['OWNER'])
+async def feature():
+	pass
+
+
+@feature.command(pass_context=True)
+async def replies(ctx: Context, toggle: bool = not REPLIES_STATUS) -> Message:
+	global REPLIES_STATUS
+	REPLIES_STATUS = toggle
+	return await bot.send_message(
+		ctx.message.channel,
+		embed=build_embed(ctx, f'{"Enabled" if toggle else "Disabled"} replies to messages.')
+	)
 
 
 @bot.group()
