@@ -4,7 +4,7 @@ from os import path, getcwd
 from random import randint
 from typing import Union
 
-from discord import User, Message, Embed, Server, Game, Permissions, Channel, PrivateChannel, ChannelType, HTTPException, Forbidden
+from discord import User, Message, Embed, Server, Game, Permissions, Channel, PrivateChannel, ChannelType, HTTPException, Forbidden, InvalidArgument, NotFound
 from discord.ext.commands import Bot, Context, check
 
 from bot.config import CONFIG
@@ -550,33 +550,6 @@ async def himemod():
 async def config(ctx, flag, value=None, *extras):
 	if ctx.message.author.id != '202163416083726338':  # HellPie
 		return
-	if flag == 'STATUS':
-		await bot.change_presence(game=Game(
-			name=value if value is not None else '',
-			url=extras[0] if len(extras) > 0 and extras[0] is not None else '',
-			type=1 if len(extras) > 1 and extras[1] == 'STREAM' else 0
-		))
-	elif flag == 'SIMULATE':
-		if value is not None or value is not 'None':
-			global SIMULATE_USER
-			SIMULATE_USER = value
-			user = await bot.get_user_info(SIMULATE_USER)
-			value = f'{user.name}#{user.discriminator}'
-		for args in extras:
-			kvpair = args.split(':')
-			global SIMULATE_COUNT
-			if kvpair[0] == 'count':
-				SIMULATE_COUNT = int(kvpair[1])
-			elif kvpair[0] == 'stop':
-				SIMULATE_COUNT = 0
-	elif flag == 'REPLIES':
-		global REPLIES_STATUS
-		if value is None or value is '' or value == 'TOGGLE':
-			value = 'OFF' if REPLIES_STATUS else 'ON'
-		if value == 'ON':
-			REPLIES_STATUS = True
-		elif value == 'OFF':
-			REPLIES_STATUS = False
 	elif flag == 'BRIDGE':
 		if value is not None:
 			for args in extras:
@@ -587,67 +560,10 @@ async def config(ctx, flag, value=None, *extras):
 					del BRIDGECONF[value]
 			with open(BRIDGECONF_PATH, 'w+') as bridge_conf:
 				json.dump(BRIDGECONF, bridge_conf)
-	elif flag == 'INVITE':
-		options = {
-			'max_age': 24,
-			'max_uses': 1,
-			'temporary': False,
-			'unique': False
-		}
-		try:
-			if value is not None:
-				for args in extras:
-					kvpair = args.split(':')
-					options[kvpair[0]] = kvpair[1]
-			invite = await bot.create_invite(
-				destination=bot.get_channel(value) if value is not None else ctx.message.channel,
-				options=options
-			)
-			return await bot.send_message(ctx.message.channel, 'Generated invite: {}'.format(invite.url))
-		except HTTPException as exception:
-			return await bot.send_message(ctx.message.channel, 'Unable to create invite: {}'.format(exception))
 	return await bot.send_message(
 		ctx.message.channel,
 		'Updated: `{}` to `{}`{}'.format(flag, value, f'with extras `{extras}`' if len(extras) > 0 else '')
 	)
-
-
-@himemod.command(pass_context=True, alias=['debug'])
-@check(lambda ctx: ctx.message.author.id == CONFIG['BOT']['OWNER'])
-async def old_debug(ctx, action, channel, *extras):
-	async def log(_channel, _message):
-		if isinstance(_channel, str):
-			_channel = bot.get_channel(_channel)
-		print(f'{_channel.server.name}{_channel.name} -> {_message}')
-		return await bot.send_message(_channel, embed=Embed(description=_message))
-	
-	if action == 'broadcast':
-		return await log(channel, f':bell: - Broadcast message: `{" ".join(extras)}`')
-	elif action == 'warn':
-		return await log(channel, f':warning: - {" ".join(extras)}')
-	elif action == 'error':
-		return await log(channel, f':x: - {" ".join(extras)}')
-	elif action == 'success':
-		return await log(channel, f':white_check_mark: - {" ".join(extras)}')
-	elif action == 'wait':
-		return await log(channel, f':hourglass_flowing_sand: - {" ".join(extras)}')
-	if action == 'log':
-		message = ''
-		if channel == 'servers':
-			for server in bot.servers:
-				message += f'**{server.name} (`{server.id}`)**\n'
-				for item in server.channels:
-					if item.type != ChannelType.voice:
-						message += f'* `{item.id}` -> {item.name}\n'
-		parsed = ''
-		for line in message.split('\n'):
-			if len(parsed + line) > 2000:
-				await bot.send_message(ctx.message.channel, parsed)
-				parsed = f'{line}\n'
-			else:
-				parsed += f'{line}\n'
-		if parsed != '':
-			return await bot.send_message(ctx.message.channel, parsed)
 
 
 def start():
