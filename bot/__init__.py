@@ -10,6 +10,8 @@ from discord.ext.commands import Bot, Context, check
 from bot.config import CONFIG
 from bot.utils import build_embed, OpStatus
 
+VERSION = '3.0'
+
 PARENTS = [
 	'202163416083726338',  # _HellPie
 	'225511609567543297',  # Kirei
@@ -55,7 +57,7 @@ LOG_LEVELS = {
 	'LOG': '\N{PAGE FACING UP}',
 	'INFO': '\N{BELL}',
 	'SUCCESS': '\N{WHITE HEAVY CHECK MARK}',
-	'WARNING': '\N{WARNING}',
+	'WARNING': '\N{WARNING SIGN}',
 	'ERROR': '\N{CROSS MARK}'
 }
 
@@ -74,6 +76,36 @@ async def on_ready():
 		with open(ZANTOCONF_PATH, 'r') as zanto_conf:
 			global ZANTOCONF
 			ZANTOCONF = json.load(zanto_conf)
+	changelog_path = path.join(getcwd(), 'assets', 'changelog.txt')
+	changelog = ''
+	if path.exists(changelog_path):
+		with open(changelog_path, 'r+') as changelog_file:
+			changelog = changelog_file.read()
+			changelog_file.seek(0)
+			changelog_file.truncate()
+		if changelog.isspace():
+			print('No changelog found. Aborting changelog broadcast operation.')
+			return
+		for server in bot.servers:
+			if server.id != '306766898283020288':
+				continue
+			for channel in server.channels:
+				if channel.type not in [ChannelType.text, ChannelType.group]:
+					continue
+				if 'general' in channel.name or 'off-topic' in channel.name:
+					try:
+						name = server.me.nick if server.me.nick is not None else bot.user.name
+						embed = Embed(title=f'\N{BELL} - Updated Hime to version `v{VERSION}`', description=changelog)
+						embed.set_author(name=name, icon_url=bot.user.avatar_url)
+						await bot.send_message(channel, embed=embed)
+					except (InvalidArgument, NotFound):
+						print('Channel \'{channel.name}\' ({channel}) is not a valid destination.')
+					except Forbidden:
+						print(f'Permission `Send Messages` not granted on server `{server.name}`.')
+					except HTTPException:
+						print(f'Message to server {server.name} denied by the Discord API.')
+					finally:
+						break
 
 
 @bot.event
