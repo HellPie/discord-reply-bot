@@ -1,0 +1,21 @@
+Welcome to `Hime 3.0`. A lot of things changed since the last automated changelog.
+Let's begin with the most obvious change: I rewrote the changelog broadcasting entirely. (The next changelog will be much shorter I promise)
+
+Changes since **`1.10`**:
+- Removed channel bridging (improved in `1.10` but removed in `3.0`)
+- Added `:$hime` commands to help configure Hime without editing code/config (`1.8` but rewritten in `3.0`):
+	- `status` to update her status (playing/streaming) (`1.8`)
+	- `nickname` to change her nickname on a server (needs permissions) (`2.5`)
+- Added `:$debug` commands to help out with debugging (`1.11` but rewritten in `3.0`):
+	- `servers` and `channels` to list channels and servers with their IDs (`1.11`)
+	- `invite` to create temporary invites (`2.2`)
+	- `log` and `broadcast` to quickly warn and notify people cross-server about issues (`3.0`)
+	- `feature` to enable or disable features (`replies`) (`3.0`)
+- Added server blacklisting to disable Hime completely on a server (`2.0`)
+- All emotes are served from her server so no more broken emotes (`2.3`)
+- Updated IDs for people Hime considers nice and updated the list of her parents (`2.4`)
+- Special hug replies for Mercy mains and people Hime considers adorable. (`2.5`)
+- Rewritten most of the commands, replies and data storage (configs for `zantomode`) (started in `2.2`)
+
+Please notify the owner of the server to contact me (<@202163416083726338>) because Hime needs some permissions changed to avoid constant crashes.
+If crashes happen repeatedly due to missing permissions, I will blacklist Hime from the server to avoid ruining Hime on other servers.

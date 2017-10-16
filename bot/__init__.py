@@ -87,16 +87,19 @@ async def on_ready():
 			print('No changelog found. Aborting changelog broadcast operation.')
 			return
 		for server in bot.servers:
-			if server.id != '306766898283020288':
-				continue
 			for channel in server.channels:
 				if channel.type not in [ChannelType.text, ChannelType.group]:
 					continue
 				if 'general' in channel.name or 'off-topic' in channel.name:
 					try:
 						name = server.me.nick if server.me.nick is not None else bot.user.name
-						embed = Embed(title=f'\N{BELL} - Updated Hime to version `v{VERSION}`', description=changelog)
+						embed = Embed(
+							title=f'\N{BELL} - Updated Hime to version `v{VERSION}`',
+							description=changelog
+						)
 						embed.set_author(name=name, icon_url=bot.user.avatar_url)
+						embed.set_thumbnail(url=bot.user.avatar_url)
+						embed.set_footer(text='Made with \u2765 by HellPie', icon_url='https://i.imgur.com/Winymjd.png')
 						await bot.send_message(channel, embed=embed)
 					except (InvalidArgument, NotFound):
 						print('Channel \'{channel.name}\' ({channel}) is not a valid destination.')
