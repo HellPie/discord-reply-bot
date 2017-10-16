@@ -47,10 +47,7 @@ SIMULATE_CONFIG = {
 }
 
 ZANTOCONF_PATH = path.join(path.realpath(getcwd()), 'assets', f'{CONFIG["STORAGE"]["ZANTOCONF"]}.json')
-BRIDGECONF_PATH = path.join(path.realpath(getcwd()), 'assets', f'{CONFIG["STORAGE"]["BRIDGECONF"]}.json')
-
 ZANTOCONF = {}
-BRIDGECONF = {}
 
 ZANTOCONF_BLACKLIST = [' ', '!', '?']
 
@@ -77,13 +74,6 @@ async def on_ready():
 		with open(ZANTOCONF_PATH, 'r') as zanto_conf:
 			global ZANTOCONF
 			ZANTOCONF = json.load(zanto_conf)
-	if not path.exists(BRIDGECONF_PATH):
-		with open(BRIDGECONF_PATH, 'w') as bridge_conf:
-			json.dump({}, bridge_conf)
-	else:
-		with open(BRIDGECONF_PATH, 'r') as bridge_conf:
-			global BRIDGECONF
-			BRIDGECONF = json.load(bridge_conf)
 
 
 @bot.event
@@ -96,45 +86,6 @@ async def on_message(message: Message):
 	def match(_expr):
 		return re.compile(_expr, re.IGNORECASE).match(message.content)
 	
-	global BRIDGECONF
-	with open(BRIDGECONF_PATH, 'r') as bridge_conf:
-		BRIDGECONF = json.load(bridge_conf)
-	if message.channel.id in BRIDGECONF:
-		print('[{}] {}#{}@{}/{} ->\n{}\n{}\n'.format(
-			message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-			message.author.name,
-			message.author.discriminator,
-			message.channel.server.name,
-			message.channel.name,
-			message.clean_content,
-			[f'{attachment["filename"]} - {attachment["url"]}\n' for attachment in message.attachments]
-		))
-		if BRIDGECONF[message.channel.id] is not None:
-			channel = bot.get_channel(BRIDGECONF[message.channel.id])
-			if channel is not None:
-				embed = Embed(
-					type='rich',
-					description=message.clean_content,
-					timestamp=message.timestamp,
-					colour=0xC9A864
-				)
-				embed.set_author(
-					name=f'{message.author.name}#{message.author.discriminator}',
-					icon_url=message.author.avatar_url
-				)
-				embed.set_footer(
-					text=f'{message.channel.server.name}#{message.channel.name}',
-					icon_url=message.channel.server.icon_url
-				)
-				for attachment in message.attachments:
-					if attachment['filename'].split('.')[-1].upper() in ['PNG', 'JPG', 'JPEG', 'GIF', 'WEBP']:
-						embed.set_image(url=attachment['url'])
-					else:
-						embed.add_field(
-							name=f'{attachment["filename"]} ({attachment["size"]}B)',
-							value=attachment['url']
-						)
-				await bot.send_message(channel, embed=embed)
 	if message.author.id == bot.user.id or message.author.bot or message.server.id in GUILDS_BLACKLIST:
 		return
 	if not REPLIES_STATUS and message.author.id not in ADORABLE_PEOPLE:  # Bypass disabled replies for the selected few
@@ -538,31 +489,6 @@ async def channels(ctx: Context, server: Server) -> Message:
 	if len(embed.fields) > 0:
 		await bot.send_message(ctx.message.channel, embed=embed)
 		return await bot.send_message(ctx.message.channel, embed=build_embed(ctx, 'Listed all channels with details.'))
-
-
-@bot.group()
-async def himemod():
-	pass
-
-
-@himemod.command(pass_context=True)
-async def config(ctx, flag, value=None, *extras):
-	if ctx.message.author.id != '202163416083726338':  # HellPie
-		return
-	elif flag == 'BRIDGE':
-		if value is not None:
-			for args in extras:
-				kvpair = args.split(':')
-				if kvpair[0] == 'destination':
-					BRIDGECONF[value] = kvpair[1]
-				if kvpair[0] == 'stop' and value in BRIDGECONF:
-					del BRIDGECONF[value]
-			with open(BRIDGECONF_PATH, 'w+') as bridge_conf:
-				json.dump(BRIDGECONF, bridge_conf)
-	return await bot.send_message(
-		ctx.message.channel,
-		'Updated: `{}` to `{}`{}'.format(flag, value, f'with extras `{extras}`' if len(extras) > 0 else '')
-	)
 
 
 def start():
