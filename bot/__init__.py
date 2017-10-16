@@ -4,7 +4,7 @@ from os import path, getcwd
 from random import randint
 from typing import Union
 
-from discord import User, Message, Embed, Server, Game, Permissions, Channel, PrivateChannel, ChannelType, HTTPException, Forbidden, InvalidArgument, NotFound
+from discord import User, Message, Embed, Server, Game, Permissions, Channel, ChannelType, HTTPException, Forbidden, InvalidArgument, NotFound
 from discord.ext.commands import Bot, Context, check
 
 from bot.config import CONFIG
@@ -268,9 +268,9 @@ async def invite(ctx: Context, dest: Union[Channel, Server], time: int = 0, use:
 	try:
 		created = await bot.create_invite(destination=dest, options=options)
 	except HTTPException:
-		if dest.__class__ == Server:
+		if isinstance(dest, Server):
 			has_permission = Permissions.create_instant_invite in dest.me.server_permissions
-		elif dest.__class__ == Channel or dest.__class__ == PrivateChannel:
+		elif isinstance(dest, Channel):
 			has_permission = Permissions.create_instant_invite in dest.permissions_for(dest.server.me)
 		else:
 			return await bot.send_message(ctx.message.channel, embed=build_embed(
@@ -286,7 +286,7 @@ async def invite(ctx: Context, dest: Union[Channel, Server], time: int = 0, use:
 		return await bot.send_message(ctx.message.channel, embed=build_embed(
 			ctx,
 			'Permission `Create Instant Invite` not granted on {} `{}`'.format(
-				'server' if dest.__class__ == Server else 'channel',
+				'server' if isinstance(dest, Server) else 'channel',
 				dest.name
 			),
 			status=OpStatus.FAILURE
