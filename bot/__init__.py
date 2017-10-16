@@ -256,7 +256,7 @@ async def zantomode(ctx, *sentence):
 
 
 @bot.group()
-@check(lambda ctx: ctx.message.author.id == CONFIG['BOT']['OWNER'])
+@check(lambda ctx: ctx.message.author.id == CONFIG['BOT']['OWNER'] or ctx.message.author.id in PARENTS)
 async def hime():
 	pass
 
