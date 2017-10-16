@@ -5,7 +5,8 @@ from discord import Embed
 class OpStatus(IntEnum):
 	SUCCESS = 0x2ECC71,
 	FAILURE = 0xc0392B,
-	WARNING = 0xf39C12
+	WARNING = 0xf39C12,
+	NONE = None
 
 
 def build_embed(ctx, desc: str, title: str = '', status: OpStatus = OpStatus.SUCCESS) -> Embed:
