@@ -408,12 +408,13 @@ async def simulate(ctx: Context, user: User = None, count: int = 0) -> Message:
 
 
 @debug.command(pass_context=True)
-async def log(ctx: Context, dest: Channel, message: str, level: str = 'INFO') -> Message:
+async def log(ctx: Context, dest: str, message: str, level: str = 'INFO') -> Message:
+	dest = bot.get_channel(dest)
 	level = level.upper()
-	if level not in LOG_LEVELS.values():
+	if level not in LOG_LEVELS.keys():
 		return await bot.send_message(ctx.message.channel, embed=build_embed(
 			ctx,
-			f'Log level can be one of: `{LOG_LEVELS.values()}`',
+			f'Log level can be one of: `{LOG_LEVELS.keys()}`',
 			status=OpStatus.FAILURE
 		))
 	prefix = LOG_LEVELS[level]
