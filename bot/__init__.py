@@ -525,10 +525,10 @@ async def channels(ctx: Context, server_id: str) -> Message:
 	await bot.send_message(ctx.message.channel, embed=Embed.from_data(first))
 	embed = Embed.from_data(template)
 	for channel in server.channels:
-		embed.add_field(name=f'`{channel.name}` ({channel.mention} - `{channel.id}`', value='{}\n\nPermissions:'.format(
-			channel.topic,
-			permissions(channel.permissions_for(server.me))
-		))
+		embed.add_field(
+			name=f'`{channel.name}` ({channel.mention} - `{channel.id}`',
+			value=f'{channel.topic}\n\nPermissions:{permissions(channel.permissions_for(server.me).value)}'
+		)
 		if len(embed.fields) == 25 or len(str(embed.to_dict())) > 5000:
 			await bot.send_message(ctx.message.channel, embed=embed)
 			embed = Embed.from_data(template)
