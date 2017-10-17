@@ -36,7 +36,9 @@ LESSER_CREATURES = [
 	'228162606580367370',  # Sageth
 	'280096430356430848'  # Pmik
 ]
-GUILDS_BLACKLIST = []
+GUILDS_BLACKLIST = [
+	'291290703021998080'  # OW Road to Grandmaster+ (they disabled send msg perm for the bot, I wont waste CPU on reets)
+]
 
 REPLIES_STATUS = True
 
