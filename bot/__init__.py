@@ -425,7 +425,7 @@ async def log(ctx: Context, dest: str, message: str, level: str = 'INFO') -> Mes
 			status=OpStatus.FAILURE
 		))
 	try:
-		await bot.send_message(dest, embed=build_embed(ctx, f'{prefix} - {message}', status=OpStatus.NONE))
+		await bot.send_message(dest, embed=build_embed(ctx, f'{prefix} - {message}'))
 	except InvalidArgument:
 		return await bot.send_message(ctx.message.channel, embed=build_embed(
 			ctx,
