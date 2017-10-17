@@ -8,9 +8,9 @@ from discord import User, Message, Embed, Server, Game, Permissions, Channel, Ch
 from discord.ext.commands import Bot, Context, check
 
 from bot.config import CONFIG
-from bot.utils import build_embed, OpStatus
+from bot.utils import build_embed, OpStatus, permissions
 
-VERSION = '3.1'
+VERSION = '3.2'
 
 PARENTS = [
 	'202163416083726338',  # _HellPie
@@ -83,10 +83,12 @@ async def on_ready():
 			changelog = changelog_file.read()
 			changelog_file.seek(0)
 			changelog_file.truncate()
-		if changelog.isspace():
+		if changelog.isspace() or len(changelog) < 1:
 			print('No changelog found. Aborting changelog broadcast operation.')
 			return
 		for server in bot.servers:
+			if server is not None:
+				continue
 			for channel in server.channels:
 				if channel.type not in [ChannelType.text, ChannelType.group]:
 					continue
@@ -257,7 +259,7 @@ async def hime():
 
 @hime.command(pass_context=True, aliases=['presence'])
 async def status(ctx: Context, game: str = None, url: str = None) -> Message:
-	is_empty = game is None or game.isspace()
+	is_empty = game is None or game.isspace() or len(game) < 1
 	is_stream = not is_empty and url is not None and len(url) > 0 and not url.isspace()
 	await bot.change_presence(game=None if is_empty else Game(
 		name=game,
@@ -273,7 +275,7 @@ async def status(ctx: Context, game: str = None, url: str = None) -> Message:
 
 @hime.command(pass_context=True, aliases=['nick'])
 async def nickname(ctx: Context, nick: str = None) -> Message:
-	is_empty = nick is None or nick.isspace()
+	is_empty = nick is None or nick.isspace() or len(nick) < 1
 	try:
 		await ctx.bot.change_nickname(member=ctx.message.server.me, nickname=None if is_empty else nick[:32])
 	except Forbidden:
@@ -411,7 +413,7 @@ async def log(ctx: Context, dest: Channel, message: str, level: str = 'INFO') ->
 			status=OpStatus.FAILURE
 		))
 	prefix = LOG_LEVELS[level]
-	if message.isspace():
+	if message.isspace() or len(message) < 1:
 		return await bot.send_message(ctx.message.channel, embed=build_embed(
 			ctx,
 			'Cannot send an empty message',
@@ -498,6 +500,7 @@ async def servers(ctx: Context) -> Message:
 			value += f'\n- Features: `{server.features}`'
 			if 'INVITE_SPLASH' in server.features:
 				value += f'- Splash: `{server.splash}`\n- Splash URL: `{server.splash_url}`'
+		value += f'\n- Permissions:{permissions(server.me.server_permissions)}'
 		embed.add_field(name=f'(`{server.id}`) - {server.name}', value=value)
 		if len(embed.fields) == 25 or len(str(embed.to_dict())) > 5000:
 			await bot.send_message(ctx.message.channel, embed=embed)
@@ -517,7 +520,10 @@ async def channels(ctx: Context, server: Server) -> Message:
 	await bot.send_message(ctx.message.channel, embed=Embed.from_data(first))
 	embed = Embed.from_data(template)
 	for channel in server.channels:
-		embed.add_field(name=f'`{channel.name}` ({channel.mention} - `{channel.id}`', value=channel.topic)
+		embed.add_field(name=f'`{channel.name}` ({channel.mention} - `{channel.id}`', value='{}\n\nPermissions:'.format(
+			channel.topic,
+			permissions(channel.permissions_for(server.me))
+		))
 		if len(embed.fields) == 25 or len(str(embed.to_dict())) > 5000:
 			await bot.send_message(ctx.message.channel, embed=embed)
 			embed = Embed.from_data(template)
