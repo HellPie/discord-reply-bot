@@ -1,3 +1,3 @@
-Changes since **`3.1`**:
-- Fixed changelog being broadcasted even if there was no content.
-- Added listing of permissions to `debug` commands for easier debugging.
+Changes since **`3.2`**
+- Fixed `log` command, it only accepts ids now, no mentions.
+- Ban `OW Road to Grandmaster+` in order to save CPU since they disabled `Send Messages` permissions everywhere for the bot.
