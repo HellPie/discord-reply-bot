@@ -10,7 +10,7 @@ from discord.ext.commands import Bot, Context, check
 from bot.config import CONFIG
 from bot.utils import build_embed, OpStatus, permissions
 
-VERSION = '3.2'
+VERSION = '3.3'
 
 PARENTS = [
 	'202163416083726338',  # _HellPie
@@ -106,16 +106,20 @@ async def on_ready():
 					except (InvalidArgument, NotFound):
 						print('Channel \'{channel.name}\' ({channel}) is not a valid destination.')
 					except Forbidden:
-						print(f'Permission `Send Messages` not granted on server `{server.name}`.')
+						print('Permission `Send Messages` not granted on server `{}` for channel `{}` ({}).'.format(
+							server.name,
+							channel.name,
+							channel.mention
+						))
 					except HTTPException:
 						print(f'Message to server {server.name} denied by the Discord API.')
 					finally:
 						break
 
 
-@bot.event
-async def on_command_error(*args):
-	pass
+# @bot.event
+# async def on_command_error(*args):
+# 	pass
 
 
 @bot.event
@@ -500,7 +504,7 @@ async def servers(ctx: Context) -> Message:
 			value += f'\n- Features: `{server.features}`'
 			if 'INVITE_SPLASH' in server.features:
 				value += f'- Splash: `{server.splash}`\n- Splash URL: `{server.splash_url}`'
-		value += f'\n- Permissions:{permissions(server.me.server_permissions)}'
+		value += f'\n- Permissions:{permissions(server.me.server_permissions.value)}'
 		embed.add_field(name=f'(`{server.id}`) - {server.name}', value=value)
 		if len(embed.fields) == 25 or len(str(embed.to_dict())) > 5000:
 			await bot.send_message(ctx.message.channel, embed=embed)
@@ -511,7 +515,8 @@ async def servers(ctx: Context) -> Message:
 
 
 @data.command(pass_context=True)
-async def channels(ctx: Context, server: Server) -> Message:
+async def channels(ctx: Context, server_id: str) -> Message:
+	server = bot.get_server(server_id)
 	name = ctx.message.server.me.nick if ctx.message.server.me.nick is not None else bot.user.name
 	template = Embed().set_author(name=name, icon_url=bot.user.avatar_url).to_dict()
 	first = template.copy()
