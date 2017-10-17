@@ -89,8 +89,6 @@ async def on_ready():
 			print('No changelog found. Aborting changelog broadcast operation.')
 			return
 		for server in bot.servers:
-			if server is not None:
-				continue
 			for channel in server.channels:
 				if channel.type not in [ChannelType.text, ChannelType.group]:
 					continue
@@ -119,9 +117,9 @@ async def on_ready():
 						break
 
 
-# @bot.event
-# async def on_command_error(*args):
-# 	pass
+@bot.event
+async def on_command_error(*args):
+	pass
 
 
 @bot.event
