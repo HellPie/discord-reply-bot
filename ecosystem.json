@@ -6,7 +6,7 @@
 		"interpreter"           : "python3",
 		"interpreter_ergs"      : "-E",
 		"watch"                 : true,
-		"ignore_watch"          : [ "storage/" ],
+		"ignore_watch"          : [ "storage", "assets" ],
 		"max_memory_restart"    : "64M",
 		"env"                   : { "CONFIG": "storage/config.ini" },
 		"env_internal"          : { "CONFIG": "storage/internal_config.ini" },
