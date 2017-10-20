@@ -1,0 +1,19 @@
+{
+	"apps" : [{
+		"name"                  : "hime_legacy",
+		"script"                : "run.py",
+		"args"                  : "--config storage/config.ini",
+		"interpreter"           : "python3",
+		"interpreter_args"      : "-I -OO -S",
+		"watch"                 : true,
+		"ignore_watch"          : [ "storage/" ],
+		"max_memory_restart"    : "64M",
+		"env"                   : { "CONFIG": "storage/config.ini" },
+		"env_internal"          : { "CONFIG": "storage/internal_config.ini" },
+		"max_restarts"          : "5",
+		"min_uptime"            : 16000,
+		"restart_delay"         : "3000",
+		"autorestart"           : true,
+		"post_update"           : [ "pip install -r requirements.txt" ]
+	}]
+}
