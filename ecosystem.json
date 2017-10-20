@@ -4,6 +4,7 @@
 		"script"                : "run.py",
 		"args"                  : "--config storage/config.ini",
 		"interpreter"           : "python3",
+		"interpreter_ergs"      : "-E",
 		"watch"                 : true,
 		"ignore_watch"          : [ "storage/" ],
 		"max_memory_restart"    : "64M",
