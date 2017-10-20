@@ -18,13 +18,13 @@ customs.lumen
 .bella/
 bella.properties
 
-# - AI Informations
+# - AI Information
 .coral/
 coral.config
 coral.db
 
 # - Hime Storage
-*.json
+storage/
 
 
 ################################################################################
@@ -71,7 +71,7 @@ tmp/
 # - App Captures
 captures/
 
-# - PyCharm Configuration (user-specific informations)
+# - PyCharm Configuration (user-specific information)
 .idea/dictionaries/
 .idea/libraries/
 .idea/shelf/
@@ -115,7 +115,7 @@ captures/
 #------------------------------------------------------------------------------#
 # Mac OS is worse than Windows with all this excessive, horrible data caching...
 
-# - Chached generic files
+# - Cached generic files
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -131,7 +131,7 @@ captures/
 .Trashes
 .VolumeIcon.icns
 
-# - AFP Sharing Informations (if repo is shared via AFP)
+# - AFP Sharing Information (if repo is shared via AFP)
 .AppleDB
 .AppleDesktop
 Network Trash Folder
