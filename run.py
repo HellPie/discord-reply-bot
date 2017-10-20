@@ -1,20 +1,19 @@
-import sys
 import logging
-import os
-import sqlite3
+from sys import stdout
+from os.path import exists
 
-import bot
+from bot import start
 
 
 def __init(entry_point):
-	logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+	logging.basicConfig(stream=stdout, level=logging.INFO)
 	log = logging.getLogger('run.py')
 	
 	log.info('starting initialization...')
 	log.info('checking assets structure...')
 	
 	log.info('- checking config...')
-	if os.path.exists('./assets/config.ini'):
+	if exists('./assets/config.ini'):
 		log.info('  DONE - found config file at \'./assets/config.ini\'')
 	else:
 		log.error('  FAIL - failed to find config file')
@@ -25,4 +24,4 @@ def __init(entry_point):
 
 
 if __name__ == '__main__':
-	__init(bot.start)
+	__init(start)
