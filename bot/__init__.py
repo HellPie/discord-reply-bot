@@ -410,6 +410,11 @@ async def simulate(ctx: Context, user: User = None, count: int = 0) -> Message:
 @debug.command(pass_context=True)
 async def log(ctx: Context, dest: str, message: str, level: str = 'INFO') -> Message:
 	dest = bot.get_channel(dest)
+	if dest is None:
+		for server in bot.servers:
+			if dest in server.members:
+				dest = server.get_member(dest)
+				break
 	level = level.upper()
 	if level not in LOG_LEVELS.keys():
 		return await bot.send_message(ctx.message.channel, embed=build_embed(
