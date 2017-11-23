@@ -55,6 +55,9 @@ ZANTOCONF = {}
 
 ZANTOCONF_BLACKLIST = [' ', '!', '?']
 
+HACKERCONF_PATH = path.join(path.realpath(getcwd()), 'assets', f'{CONFIG["STORAGE"]["HACKERCONF"]}.json')
+HACKERCONF = {}
+
 LOG_LEVELS = {
 	'LOG': '\N{PAGE FACING UP}',
 	'INFO': '\N{BELL}',
@@ -77,6 +80,13 @@ async def on_ready():
 	else:
 		with open(ZANTOCONF_PATH, 'r') as zanto_conf:
 			global ZANTOCONF
+			ZANTOCONF = json.load(zanto_conf)
+	if not path.exists(HACKERCONF_PATH):
+		with open(HACKERCONF_PATH, 'w') as zanto_conf:
+			json.dump({}, zanto_conf)
+	else:
+		with open(HACKERCONF_PATH, 'r') as zanto_conf:
+			global HACKERCONF
 			ZANTOCONF = json.load(zanto_conf)
 	changelog_path = path.join(getcwd(), 'assets', 'changelog.txt')
 	changelog = ''
@@ -253,6 +263,20 @@ async def zantomode(ctx, *sentence):
 	if message != ' ':
 		return await bot.send_message(ctx.message.channel, message)
 	return await bot.send_message(ctx.message.channel, 'Unable to emojify message :(')
+
+
+@bot.command(pass_context=True)
+@check(lambda ctx: ctx.message.server.id not in GUILDS_BLACKLIST and ctx.message.author.id in ADORABLE_PEOPLE)
+async def hackermode(ctx, *sentence):
+	message = ' '
+	sentence = ' '.join(sentence)
+	for c in sentence:
+		c = c.upper()
+		if c in HACKERCONF:
+			message += f'{str(HACKERCONF[c])} '
+	if message != ' ':
+		return await bot.send_message(ctx.message.channel, message)
+	return await bot.send_message(ctx.message.channel, 'Unable to hack message :(')
 
 
 @bot.group()
