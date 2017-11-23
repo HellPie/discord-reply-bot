@@ -40,6 +40,10 @@ bin/
 gen/
 __pycache__/
 
+# - Virtual Environment
+.venv/
+.virtualenv/
+
 # - Native Output
 *.o
 *.out

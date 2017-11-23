@@ -1,3 +1,11 @@
-Changes since **`3.2`**
-- Fixed `log` command, it only accepts ids now, no mentions.
-- Ban `OW Road to Grandmaster+` in order to save CPU since they disabled `Send Messages` permissions everywhere for the bot.
+So, update `3.4` was released a while ago, but it only contained changes that were not visible to the end users.
+I thought adding the changelog for it would have been better, but I don't like to stay silent, so here it is.
+
+Changes since **`3.3`**
+- Prepared for Hime 5.0 (Rikka).
+- Implemented PM2 process manager ecosystem file for automated restarts and crash recovery.
+- Add back silent error catching whenever something goes wrong to handle exceptions within the bot.
+
+Changes since **`3.4`**
+- Enable `log` command to DM/PM users whenever possible.
+- Added `hackermode` command, locked to users within the `ADORABLE_USERS` list.

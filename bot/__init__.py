@@ -10,7 +10,7 @@ from discord.ext.commands import Bot, Context, check
 from bot.config import CONFIG
 from bot.utils import build_embed, OpStatus, permissions
 
-VERSION = '3.3'
+VERSION = '3.5'
 
 PARENTS = [
 	'202163416083726338',  # _HellPie
@@ -87,7 +87,7 @@ async def on_ready():
 	else:
 		with open(HACKERCONF_PATH, 'r') as zanto_conf:
 			global HACKERCONF
-			ZANTOCONF = json.load(zanto_conf)
+			HACKERCONF = json.load(zanto_conf)
 	changelog_path = path.join(getcwd(), 'assets', 'changelog.txt')
 	changelog = ''
 	if path.exists(changelog_path):
