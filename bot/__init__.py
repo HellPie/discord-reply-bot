@@ -266,7 +266,7 @@ async def zantomode(ctx, *sentence):
 
 
 @bot.command(pass_context=True)
-@check(lambda ctx: ctx.message.server.id not in GUILDS_BLACKLIST and ctx.message.author.id in ADORABLE_PEOPLE)
+@check(lambda ctx: ctx.message.server.id not in GUILDS_BLACKLIST)
 async def hackermode(ctx, *sentence):
 	message = ' '
 	sentence = ' '.join(sentence)
