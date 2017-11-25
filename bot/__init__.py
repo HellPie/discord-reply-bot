@@ -88,43 +88,43 @@ async def on_ready():
 		with open(HACKERCONF_PATH, 'r') as zanto_conf:
 			global HACKERCONF
 			HACKERCONF = json.load(zanto_conf)
-	changelog_path = path.join(getcwd(), 'assets', 'changelog.txt')
-	changelog = ''
-	if path.exists(changelog_path):
-		with open(changelog_path, 'r+') as changelog_file:
-			changelog = changelog_file.read()
-			changelog_file.seek(0)
-			changelog_file.truncate()
-		if changelog.isspace() or len(changelog) < 1:
-			print('No changelog found. Aborting changelog broadcast operation.')
-			return
-		for server in bot.servers:
-			for channel in server.channels:
-				if channel.type not in [ChannelType.text, ChannelType.group]:
-					continue
-				if 'general' in channel.name or 'off-topic' in channel.name:
-					try:
-						name = server.me.nick if server.me.nick is not None else bot.user.name
-						embed = Embed(
-							title=f'\N{BELL} - Updated Hime to version `v{VERSION}`',
-							description=changelog
-						)
-						embed.set_author(name=name, icon_url=bot.user.avatar_url)
-						embed.set_thumbnail(url=bot.user.avatar_url)
-						embed.set_footer(text='Made with \u2765 by HellPie', icon_url='https://i.imgur.com/Winymjd.png')
-						await bot.send_message(channel, embed=embed)
-					except (InvalidArgument, NotFound):
-						print('Channel \'{channel.name}\' ({channel}) is not a valid destination.')
-					except Forbidden:
-						print('Permission `Send Messages` not granted on server `{}` for channel `{}` ({}).'.format(
-							server.name,
-							channel.name,
-							channel.mention
-						))
-					except HTTPException:
-						print(f'Message to server {server.name} denied by the Discord API.')
-					finally:
-						break
+	# changelog_path = path.join(getcwd(), 'assets', 'changelog.txt')
+	# changelog = ''
+	# if path.exists(changelog_path):
+	# 	with open(changelog_path, 'r+') as changelog_file:
+	# 		changelog = changelog_file.read()
+	# 		changelog_file.seek(0)
+	# 		changelog_file.truncate()
+	# 	if changelog.isspace() or len(changelog) < 1:
+	# 		print('No changelog found. Aborting changelog broadcast operation.')
+	# 		return
+	# 	for server in bot.servers:
+	# 		for channel in server.channels:
+	# 			if channel.type not in [ChannelType.text, ChannelType.group]:
+	# 				continue
+	# 			if 'general' in channel.name or 'off-topic' in channel.name:
+	# 				try:
+	# 					name = server.me.nick if server.me.nick is not None else bot.user.name
+	# 					embed = Embed(
+	# 						title=f'\N{BELL} - Updated Hime to version `v{VERSION}`',
+	# 						description=changelog
+	# 					)
+	# 					embed.set_author(name=name, icon_url=bot.user.avatar_url)
+	# 					embed.set_thumbnail(url=bot.user.avatar_url)
+	# 					embed.set_footer(text='Made with \u2765 by HellPie', icon_url='https://i.imgur.com/Winymjd.png')
+	# 					await bot.send_message(channel, embed=embed)
+	# 				except (InvalidArgument, NotFound):
+	# 					print('Channel \'{channel.name}\' ({channel}) is not a valid destination.')
+	# 				except Forbidden:
+	# 					print('Permission `Send Messages` not granted on server `{}` for channel `{}` ({}).'.format(
+	# 						server.name,
+	# 						channel.name,
+	# 						channel.mention
+	# 					))
+	# 				except HTTPException:
+	# 					print(f'Message to server {server.name} denied by the Discord API.')
+	# 				finally:
+	# 					break
 
 
 @bot.event
