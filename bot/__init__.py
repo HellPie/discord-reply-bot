@@ -88,43 +88,6 @@ async def on_ready():
 		with open(HACKERCONF_PATH, 'r') as zanto_conf:
 			global HACKERCONF
 			HACKERCONF = json.load(zanto_conf)
-	# changelog_path = path.join(getcwd(), 'assets', 'changelog.txt')
-	# changelog = ''
-	# if path.exists(changelog_path):
-	# 	with open(changelog_path, 'r+') as changelog_file:
-	# 		changelog = changelog_file.read()
-	# 		changelog_file.seek(0)
-	# 		changelog_file.truncate()
-	# 	if changelog.isspace() or len(changelog) < 1:
-	# 		print('No changelog found. Aborting changelog broadcast operation.')
-	# 		return
-	# 	for server in bot.servers:
-	# 		for channel in server.channels:
-	# 			if channel.type not in [ChannelType.text, ChannelType.group]:
-	# 				continue
-	# 			if 'general' in channel.name or 'off-topic' in channel.name:
-	# 				try:
-	# 					name = server.me.nick if server.me.nick is not None else bot.user.name
-	# 					embed = Embed(
-	# 						title=f'\N{BELL} - Updated Hime to version `v{VERSION}`',
-	# 						description=changelog
-	# 					)
-	# 					embed.set_author(name=name, icon_url=bot.user.avatar_url)
-	# 					embed.set_thumbnail(url=bot.user.avatar_url)
-	# 					embed.set_footer(text='Made with \u2765 by HellPie', icon_url='https://i.imgur.com/Winymjd.png')
-	# 					await bot.send_message(channel, embed=embed)
-	# 				except (InvalidArgument, NotFound):
-	# 					print('Channel \'{channel.name}\' ({channel}) is not a valid destination.')
-	# 				except Forbidden:
-	# 					print('Permission `Send Messages` not granted on server `{}` for channel `{}` ({}).'.format(
-	# 						server.name,
-	# 						channel.name,
-	# 						channel.mention
-	# 					))
-	# 				except HTTPException:
-	# 					print(f'Message to server {server.name} denied by the Discord API.')
-	# 				finally:
-	# 					break
 
 
 @bot.event
@@ -201,7 +164,7 @@ async def on_message(message: Message):
 		reply = 'WOW'
 	elif match('^no((rmie)|(o+b))s?!*$'):
 		reply = 'reeeeeeeeeeeeeeeeeeee, just like obi'
-	elif match('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:(calvin|vale)Hug:\d+>'):
+	elif match('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:.*Hug:\d+>'):
 		hug_emote = '<:calvinHugged:367687722024042497>'
 		if author.id in MERCY_MAINS:
 			hug_emote = '<:valeHugged:367687799270408202>'
@@ -211,7 +174,7 @@ async def on_message(message: Message):
 		elif author.id in ADORABLE_PEOPLE:
 			final_emote = '<:jay3Kiss:367687910436110336>'
 		reply = f'<@{author.id}> {hug_emote} {final_emote}'
-	elif match('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:(jay3|calvin|vale)Hugged:\d+>'):
+	elif match('^(((@?(Not)?Hime)|(<@!311154146969518083>))|(@auto-reply-bot#9347)) ?<:.*Hugged:\d+>'):
 		hug_emote = '<:calvinHug:326950539524964352>'
 		if author.id in MERCY_MAINS:
 			hug_emote = '<:valeHug:367687799488512010>'
