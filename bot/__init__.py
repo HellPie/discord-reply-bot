@@ -139,7 +139,7 @@ async def on_message(message: Message):
 		reply = 'always off'
 	elif match('^sh?leep ti(ght|te)(,? [a-z#0-9]+)?$'):
 		reply = 'don\'t let the genjis bite'
-	elif match('^i( ?(ly|((love|luv) (yo)?u))),? (@?(Not)?Hime|(@auto-reply-bot#9347|<@!311154146969518083>))!?$'):
+	elif match('^i( ?(ly|lu|((love|luv) (yo)?u))),? (@?(Not)?Hime|(@auto-reply-bot#9347|<@!311154146969518083>))!?$'):
 		if author.id == '208286812089614337':  # Obi
 			reply = 'ily too obi <3'
 		elif author.id == '225511609567543297':  # Kirei
